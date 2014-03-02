@@ -31,6 +31,9 @@ public class TransformManager
         if (_ActiveModal != null)
         {
             _ActiveModal.Update();
+
+            // We force the scene to continue to update if we are in a mode.
+            HandleUtility.Repaint();
         }
 
         if (Event.current.isKey && Event.current.type == EventType.KeyDown)
