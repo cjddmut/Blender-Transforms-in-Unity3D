@@ -1,0 +1,13 @@
+Assembly-*
+*.csproj
+*.pidb
+*.unityproj
+*.userprefs
+*.sln
+*.suo
+/obj
+Temp
+*.swp
+Library
+Assets/UnityVS*
+UnityVS*
