@@ -168,6 +168,11 @@ namespace UMA
 
         private Vector3 HandleSnapping(Vector3 vecToSnap)
         {
+            if (Data.ScaleSnapIncrement == 0)
+            {
+                return vecToSnap;
+            }
+
             vecToSnap /= Data.ScaleSnapIncrement;
 
             vecToSnap.x = Mathf.Round(vecToSnap.x);

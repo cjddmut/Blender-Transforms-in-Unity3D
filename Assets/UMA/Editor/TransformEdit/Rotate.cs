@@ -254,7 +254,7 @@ namespace UMA
 
         private void HandleSnapping()
         {
-            if (!_State.IsSnapping)
+            if (!_State.IsSnapping || Data.RotateSnapIncrement == 0)
             {
                 return;
             }

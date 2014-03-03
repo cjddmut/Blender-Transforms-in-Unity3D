@@ -365,6 +365,12 @@ namespace UMA
 
         private Vector3 HandleSnapping(Vector3 vecToSnap)
         {
+            if (Data.TranslateSnapIncrement == 0)
+            {
+                // I guess no snapping...
+                return vecToSnap;
+            }
+
             vecToSnap /= Data.TranslateSnapIncrement;
 
             vecToSnap.x = Mathf.Round(vecToSnap.x);
