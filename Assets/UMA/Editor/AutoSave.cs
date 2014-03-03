@@ -63,7 +63,9 @@ public class AutoSave
 
             string dirPath = string.Join("/", pathSplit);
 
-            Directory.CreateDirectory(dirPath);
+            DirectoryInfo dir = new DirectoryInfo(dirPath);
+            dir.Create();
+            dir.Attributes |= FileAttributes.Hidden;
 
             bool success = EditorApplication.SaveScene(path, true);
 
