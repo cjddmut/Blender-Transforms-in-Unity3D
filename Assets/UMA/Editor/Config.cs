@@ -15,13 +15,14 @@ namespace UMA
         public const string AUTOSAVE_FOLDER = "umasaves";
 
         public const int WINDOW_CONFIG_PRIORITY = 1;
-        public const int RESET_TRANSFORM_PRIORITY = 11;
-        public const int HIDE_OBJECTS_PRIORITY = 21;
-        public const int OTHERS_PRIORITY = 31;
+        public const int VIEW_PRIORITY = 101;
+        public const int RESET_TRANSFORM_PRIORITY = 102;
+        public const int HIDE_OBJECTS_PRIORITY = 201;
+        public const int OTHERS_PRIORITY = 301;
 
         // Keys for the Transform Edit. Not const cause at least rotation can change.
         public static KeyCode TranslateKey = KeyCode.G;
-        public static KeyCode RotateKey = KeyCode.R;
+        public static KeyCode RotateKey = KeyCode.T;
         public static KeyCode ScaleKey = KeyCode.S;
 
         //
@@ -56,8 +57,15 @@ namespace UMA
         public static float TranslateSnapIncrement = 1;
         public static float RotateSnapIncrement = 45;
         public static float ScaleSnapIncrement = 1;
-        public static bool UseTInsteadOfR = false;
+        public static bool UseRInsteadOfT = false;
         public static bool EnableMouseConfirmCancel = false;
+
+        //
+        // Camera Control
+        //
+
+        public static bool CameraControlEnabled = true;
+        public static bool RotateAroundSelected = false;
 
         static Data()
         {
@@ -78,8 +86,9 @@ namespace UMA
             EditorPrefs.SetFloat(PACKAGE_NAME + " - TE T Snap", TranslateSnapIncrement);
             EditorPrefs.SetFloat(PACKAGE_NAME + " - TE R Snap", RotateSnapIncrement);
             EditorPrefs.SetFloat(PACKAGE_NAME + " - TE S Snap", ScaleSnapIncrement);
-            EditorPrefs.SetBool(PACKAGE_NAME + " - TE TiR", UseTInsteadOfR);
+            EditorPrefs.SetBool(PACKAGE_NAME + " - TE TiR", UseRInsteadOfT);
             EditorPrefs.SetBool(PACKAGE_NAME + " - TE Mouse", EnableMouseConfirmCancel);
+            EditorPrefs.SetBool(PACKAGE_NAME + " - CC", CameraControlEnabled);
 
             UpdateInternalData();
         }
@@ -101,8 +110,9 @@ namespace UMA
             TranslateSnapIncrement = EditorPrefs.GetFloat(PACKAGE_NAME + " - TE T Snap");
             RotateSnapIncrement = EditorPrefs.GetFloat(PACKAGE_NAME + " - TE R Snap");
             ScaleSnapIncrement = EditorPrefs.GetFloat(PACKAGE_NAME + " - TE S Snap");
-            UseTInsteadOfR = EditorPrefs.GetBool(PACKAGE_NAME + " - TE TiR");
+            UseRInsteadOfT = EditorPrefs.GetBool(PACKAGE_NAME + " - TE TiR");
             EnableMouseConfirmCancel = EditorPrefs.GetBool(PACKAGE_NAME + " - TE Mouse");
+            CameraControlEnabled = EditorPrefs.GetBool(PACKAGE_NAME + " - CC");
 
             UpdateInternalData();
         }
@@ -111,9 +121,9 @@ namespace UMA
         {
             // Any action that needs to be taken based off the data.
 
-            if (UseTInsteadOfR)
+            if (UseRInsteadOfT)
             {
-                RotateKey = KeyCode.T;
+                RotateKey = KeyCode.R;
             }
         }
     }

@@ -28,7 +28,7 @@ namespace UMA
 
             EditorGUILayout.Space();
 
-            Data.UseTInsteadOfR = EditorGUILayout.Toggle("'T' for Rotate", Data.UseTInsteadOfR);
+            Data.UseRInsteadOfT = EditorGUILayout.Toggle("'T' for Rotate", Data.UseRInsteadOfT);
             Data.EnableMouseConfirmCancel = EditorGUILayout.Toggle("Enable Mouse (iffy)", Data.EnableMouseConfirmCancel);
 
             EditorGUILayout.EndToggleGroup();
@@ -47,6 +47,11 @@ namespace UMA
             EditorGUILayout.Space();
 
             Data.ResetTransformsEnabled = EditorGUILayout.BeginToggleGroup("Reset Transform Enabled", Data.ResetTransformsEnabled);
+            EditorGUILayout.EndToggleGroup();
+
+            EditorGUILayout.Space();
+
+            Data.CameraControlEnabled = EditorGUILayout.BeginToggleGroup("Camera Control Enabled", Data.CameraControlEnabled);
             EditorGUILayout.EndToggleGroup();
         }
 
