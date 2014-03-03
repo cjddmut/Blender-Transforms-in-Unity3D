@@ -28,7 +28,7 @@ namespace UMA
 
             EditorGUILayout.Space();
 
-            Data.UseRInsteadOfT = EditorGUILayout.Toggle("'T' for Rotate", Data.UseRInsteadOfT);
+            Data.UseRInsteadOfT = EditorGUILayout.Toggle("'R' for Rotate", Data.UseRInsteadOfT);
             Data.EnableMouseConfirmCancel = EditorGUILayout.Toggle("Enable Mouse (iffy)", Data.EnableMouseConfirmCancel);
 
             EditorGUILayout.EndToggleGroup();
