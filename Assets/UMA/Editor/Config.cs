@@ -1,40 +1,120 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections;
 
-public class Config
+namespace UMA
 {
-    // Well, this isn't configurable but whatevs.
-    public const string PACKAGE_NAME = "UMA";
-    public const string AUTOSAVE_FOLDER = "umasaves";
+    [InitializeOnLoad]
+    public class Data
+    {
+        //
+        // Unconfigurable Data
+        //
 
-    //
-    // Configurable data.
-    //
+        public const string PACKAGE_NAME = "UMA";
+        public const string AUTOSAVE_FOLDER = "umasaves";
 
-    //
-    // Auto Save
-    //
+        public const int WINDOW_CONFIG_PRIORITY = 1;
+        public const int RESET_TRANSFORM_PRIORITY = 11;
+        public const int HIDE_OBJECTS_PRIORITY = 21;
+        public const int OTHERS_PRIORITY = 31;
 
-    public static bool AutoSaveEnabled = true;
-    public static float AutoSaveFrequency = 5f; // Minutes
+        // Keys for the Transform Edit. Not const cause at least rotation can change.
+        public static KeyCode TranslateKey = KeyCode.G;
+        public static KeyCode RotateKey = KeyCode.R;
+        public static KeyCode ScaleKey = KeyCode.S;
 
-    //
-    // Hiding
-    //
+        //
+        // Configurable data.
+        //
 
-    public static bool HidingEnabled = true;
+        //
+        // Auto Save
+        //
 
-    //
-    // Reset Transforms
-    //
+        public static bool AutoSaveEnabled = true;
+        public static float AutoSaveFrequency = 5f; // Minutes
 
-    public static bool ResetTransformsEnabled = true;
+        //
+        // Hiding
+        //
 
-    //
-    // Transform Editing
-    //
+        public static bool HidingEnabled = true;
 
-    public static bool TransformEditingEnabled = true;
-    public static bool UseTInsteadOfR = false;
-    public static bool EnableMouseConfirmCancel = false;
+        //
+        // Reset Transforms
+        //
+
+        public static bool ResetTransformsEnabled = true;
+
+        //
+        // Transform Editing
+        //
+
+        public static bool TransformEditingEnabled = true;
+        public static bool SnappingEnabledByDefault = false;
+        public static float TranslateSnapIncrement = 1;
+        public static float RotateSnapIncrement = 45;
+        public static float ScaleSnapIncrement = 1;
+        public static bool UseTInsteadOfR = false;
+        public static bool EnableMouseConfirmCancel = false;
+
+        static Data()
+        {
+            // Loaded up, load up da settings.
+            Data.LoadData();
+        }
+
+        public static void SaveData()
+        {
+            // TODO: I bet there's a way to do this easier with SerializeObject, explore later. If not, consider a cool solution
+            //       using reflection later. This is currently a little unwieldy.
+            EditorPrefs.SetBool(PACKAGE_NAME + " - AS", AutoSaveEnabled);
+            EditorPrefs.SetFloat(PACKAGE_NAME + " - AS Freq", AutoSaveFrequency);
+            EditorPrefs.SetBool(PACKAGE_NAME + " - Hide", HidingEnabled);
+            EditorPrefs.SetBool(PACKAGE_NAME + " - ResetT", ResetTransformsEnabled);
+            EditorPrefs.SetBool(PACKAGE_NAME + " - TE", TransformEditingEnabled);
+            EditorPrefs.SetBool(PACKAGE_NAME + " - TE Snap", SnappingEnabledByDefault);
+            EditorPrefs.SetFloat(PACKAGE_NAME + " - TE T Snap", TranslateSnapIncrement);
+            EditorPrefs.SetFloat(PACKAGE_NAME + " - TE R Snap", RotateSnapIncrement);
+            EditorPrefs.SetFloat(PACKAGE_NAME + " - TE S Snap", ScaleSnapIncrement);
+            EditorPrefs.SetBool(PACKAGE_NAME + " - TE TiR", UseTInsteadOfR);
+            EditorPrefs.SetBool(PACKAGE_NAME + " - TE Mouse", EnableMouseConfirmCancel);
+
+            UpdateInternalData();
+        }
+
+        public static void LoadData()
+        {
+            // If the first key is missing then just assume we hav eno data to load and go with defaults.
+            if (!EditorPrefs.HasKey(PACKAGE_NAME + " - AS"))
+            {
+                return;
+            }
+
+            AutoSaveEnabled = EditorPrefs.GetBool(PACKAGE_NAME + " - AS");
+            AutoSaveFrequency = EditorPrefs.GetFloat(PACKAGE_NAME + " - AS Freq");
+            HidingEnabled = EditorPrefs.GetBool(PACKAGE_NAME + " - Hide");
+            ResetTransformsEnabled = EditorPrefs.GetBool(PACKAGE_NAME + " - ResetT");
+            TransformEditingEnabled = EditorPrefs.GetBool(PACKAGE_NAME + " - TE");
+            SnappingEnabledByDefault = EditorPrefs.GetBool(PACKAGE_NAME + " - TE Snap");
+            TranslateSnapIncrement = EditorPrefs.GetFloat(PACKAGE_NAME + " - TE T Snap");
+            RotateSnapIncrement = EditorPrefs.GetFloat(PACKAGE_NAME + " - TE R Snap");
+            ScaleSnapIncrement = EditorPrefs.GetFloat(PACKAGE_NAME + " - TE S Snap");
+            UseTInsteadOfR = EditorPrefs.GetBool(PACKAGE_NAME + " - TE TiR");
+            EnableMouseConfirmCancel = EditorPrefs.GetBool(PACKAGE_NAME + " - TE Mouse");
+
+            UpdateInternalData();
+        }
+
+        public static void UpdateInternalData()
+        {
+            // Any action that needs to be taken based off the data.
+
+            if (UseTInsteadOfR)
+            {
+                RotateKey = KeyCode.T;
+            }
+        }
+    }
 }

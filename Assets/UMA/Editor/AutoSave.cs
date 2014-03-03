@@ -3,8 +3,10 @@ using UnityEditor;
 using System.Collections;
 using System.IO;
 
-[InitializeOnLoad]
-public class AutoSave
+namespace UMA
+{
+    [InitializeOnLoad]
+    public class AutoSave
 {
 
     private const int TIME_BEFORE_SAVE = 30; // Seconds
@@ -26,7 +28,7 @@ public class AutoSave
     static void Update()
     {
         // Are we enabled?
-        if (!Config.AutoSaveEnabled)
+        if (!Data.AutoSaveEnabled)
         {
             return;
         }
@@ -40,7 +42,7 @@ public class AutoSave
         {
             // Open it up!
             _CanSave = true;
-            _TimeTilSave = EditorApplication.timeSinceStartup + Config.AutoSaveFrequency;
+            _TimeTilSave = EditorApplication.timeSinceStartup + Data.AutoSaveFrequency;
         }
 
 
@@ -53,7 +55,7 @@ public class AutoSave
 
             // May not work on mac?
             string[] pathSplit = EditorApplication.currentScene.Split('/');
-            pathSplit[pathSplit.Length - 1] = Config.AUTOSAVE_FOLDER + "/" + pathSplit[pathSplit.Length - 1];            
+            pathSplit[pathSplit.Length - 1] = Data.AUTOSAVE_FOLDER + "/" + pathSplit[pathSplit.Length - 1];            
 
             string path = string.Join("/", pathSplit);
 
@@ -75,7 +77,7 @@ public class AutoSave
 
             if (!success)
             {
-                Debug.LogWarning(Config.PACKAGE_NAME + " - Scene auto save failed.");
+                Debug.LogWarning(Data.PACKAGE_NAME + " - Scene auto save failed.");
             }
 
             _CanSave = false;
@@ -83,4 +85,5 @@ public class AutoSave
 
         }
     }
+}
 }
