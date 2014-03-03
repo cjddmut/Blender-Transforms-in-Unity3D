@@ -65,7 +65,6 @@ namespace UMA
         //
 
         public static bool CameraControlEnabled = true;
-        public static bool RotateAroundSelected = false;
 
         static Data()
         {
