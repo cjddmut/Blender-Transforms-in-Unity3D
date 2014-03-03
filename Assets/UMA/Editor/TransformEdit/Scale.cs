@@ -15,10 +15,13 @@ namespace UMA
         public Scale()
         {
             _State = new TransformState();
+            TriggerKey = Data.ScaleKey;
         }
 
         public override void Start()
         {
+            base.Start();
+
             // Just in case the order isn't guaranteed, I'm going to save the selecteds.
             _Selected = Selection.GetTransforms(SelectionMode.TopLevel);
             _AvgPos = Vector3.zero;
@@ -48,13 +51,15 @@ namespace UMA
 
         public override void Update()
         {
-            if (HandleEvent())
+            base.Update();
+
+            if (!IsInMode)
             {
-                // This means we're done, let the handler know.
-                TransformManager.ModalFinished();
                 return;
             }
 
+            _State.HandleEvent();
+            
             // We reset everything to push to the UNDO stack.
             ResetScale();
             Undo.RecordObjects(_Selected, "Scale");
@@ -66,10 +71,12 @@ namespace UMA
         public override void Confirm()
         {
             // Done son!
+            base.Confirm();
         }
 
         public override void Cancel()
         {
+            base.Cancel();
             ResetScale();
         }
 
@@ -93,36 +100,6 @@ namespace UMA
 
                 t.localScale = ls;
             }
-        }
-
-        private bool HandleEvent()
-        {
-            // Cancel or confirm?
-            if (Data.EnableMouseConfirmCancel && Event.current.type == EventType.MouseDown && Event.current.button == 0 ||
-                Event.current.type == EventType.KeyDown &&
-                    (Event.current.keyCode == KeyCode.Return ||
-                     Event.current.keyCode == KeyCode.KeypadEnter ||
-                     Event.current.keyCode == Data.ScaleKey))
-            {
-                // Confirm is left click, 's' or Enter.
-                Confirm();
-                Event.current.Use();
-                return true;
-            }
-            else if (Data.EnableMouseConfirmCancel && Event.current.type == EventType.MouseDown && Event.current.button == 1 ||
-                     Event.current.type == EventType.KeyDown &&
-                     (Event.current.keyCode == KeyCode.Escape ||
-                      Event.current.keyCode == KeyCode.Space))
-            {
-                // Right click is cancel, space or ESC.
-                Cancel();
-                Event.current.Use();
-                return true;
-            }
-
-            _State.HandleEvent();
-
-            return false;
         }
 
         private void CalculateScale()

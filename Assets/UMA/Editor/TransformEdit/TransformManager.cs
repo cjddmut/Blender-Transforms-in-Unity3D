@@ -12,6 +12,9 @@ namespace UMA
         private static Scale _ScaleEdit;
         private static ModalEdit _ActiveModal;
 
+        private static bool _SwallowMouse = false;
+        private static int _MouseButton;
+
         // Use this for initialization
         static TransformManager()
         {
@@ -78,6 +81,18 @@ namespace UMA
                 }
             }
 
+            if (_SwallowMouse)
+            {
+                if (Event.current.button == _MouseButton)
+                {
+                    if (Event.current.type == EventType.MouseUp)
+                    {
+                        _SwallowMouse = false;
+                    }
+                    
+                    Event.current.Use();
+                }
+            }
         }
 
         public static void ModalFinished()
@@ -85,26 +100,10 @@ namespace UMA
             _ActiveModal = null;
         }
 
-        private static void FixStupidUnityBug()
+        public static void SwallowMouseUntilUp(int button)
         {
-            // For MenuItems it seems that unity won't allow non modifers for Windows, this catches that and fixes it.
-            // I will use consider each event used to prevent other features from using it, this could cause issues.
-
-            if (Event.current.isKey && Event.current.type == EventType.KeyDown)
-            {
-                if (!Event.current.shift && Event.current.keyCode == KeyCode.H)
-                {
-                    HideManager.HideObjects();
-                    Event.current.Use();
-                }
-
-                if (Event.current.shift && Event.current.keyCode == KeyCode.H)
-                {
-                    // Unity is really dumb. Shift + H MenuItem will stop you from typing an uppercase H when renaming an object...
-                    HideManager.HideOthers();
-                    Event.current.Use();
-                }
-            }
+            _SwallowMouse = true;
+            _MouseButton = button;
         }
     }
 }

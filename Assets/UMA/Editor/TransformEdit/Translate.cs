@@ -19,10 +19,13 @@ namespace UMA
         public Translate()
         {
             _State = new TransformState();
+            TriggerKey = Data.TranslateKey;
         }
 
         public override void Start()
         {
+            base.Start();
+
             _OriginalMousePos = Event.current.mousePosition;
             _OriginalMousePos.y = SceneView.lastActiveSceneView.camera.pixelHeight - _OriginalMousePos.y;
 
@@ -53,12 +56,14 @@ namespace UMA
 
         public override void Update()
         {
-            if (HandleEvent())
+            base.Update();
+
+            if (!IsInMode)
             {
-                // This means we're done, let the handler know.
-                TransformManager.ModalFinished();
                 return;
             }
+
+            _State.HandleEvent();
 
             // We reset everything to push to the UNDO stack.
             UpdatePositions(_OriginalAvgPos);
@@ -72,10 +77,12 @@ namespace UMA
         public override void Confirm()
         {
             // Done son!
+            base.Confirm();
         }
 
         public override void Cancel()
         {
+            base.Cancel();
             UpdatePositions(_OriginalAvgPos);
         }
 
@@ -107,36 +114,6 @@ namespace UMA
 
             _LastKnownGoodLocalPos[index] = moveTo;
             _Selected[index].position = moveTo;
-        }
-
-        private bool HandleEvent()
-        {
-            // Cancel or confirm?
-            if (Data.EnableMouseConfirmCancel && Event.current.type == EventType.MouseDown && Event.current.button == 0 ||
-                Event.current.type == EventType.KeyDown &&
-                    (Event.current.keyCode == KeyCode.Return ||
-                     Event.current.keyCode == KeyCode.KeypadEnter ||
-                     Event.current.keyCode == Data.TranslateKey))
-            {
-                // Confirm is left click, 'g' or Enter.
-                Confirm();
-                Event.current.Use();
-                return true;
-            }
-            else if (Data.EnableMouseConfirmCancel && Event.current.type == EventType.MouseDown && Event.current.button == 1 ||
-                     Event.current.type == EventType.KeyDown &&
-                     (Event.current.keyCode == KeyCode.Escape ||
-                      Event.current.keyCode == KeyCode.Space))
-            {
-                // Right click is cancel, space or ESC.
-                Cancel();
-                Event.current.Use();
-                return true;
-            }
-
-            _State.HandleEvent();
-
-            return false;
         }
 
         private void CalculatePosition()
