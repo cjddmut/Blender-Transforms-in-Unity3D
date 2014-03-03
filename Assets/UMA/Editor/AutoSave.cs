@@ -64,8 +64,12 @@ public class AutoSave
             string dirPath = string.Join("/", pathSplit);
 
             DirectoryInfo dir = new DirectoryInfo(dirPath);
-            dir.Create();
-            dir.Attributes |= FileAttributes.Hidden;
+
+            if (!dir.Exists)
+            {
+                // TODO: Unity will complain once on creation about the folder, be nice to remove that.
+                dir.Create();
+            }
 
             bool success = EditorApplication.SaveScene(path, true);
 
