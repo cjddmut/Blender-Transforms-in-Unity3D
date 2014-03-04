@@ -42,7 +42,7 @@ namespace UMA
         {
             // Open it up!
             _CanSave = true;
-            _TimeTilSave = EditorApplication.timeSinceStartup + Data.AutoSaveFrequency;
+            _TimeTilSave = EditorApplication.timeSinceStartup + Data.AutoSaveFrequency * 60;
         }
 
 
@@ -81,7 +81,7 @@ namespace UMA
             }
 
             _CanSave = false;
-            _TimeTilSave = EditorApplication.timeSinceStartup + TIME_BEFORE_SAVE;
+            _TimeTilSave = EditorApplication.timeSinceStartup + Data.AutoSaveFrequency * 60;
 
         }
     }
