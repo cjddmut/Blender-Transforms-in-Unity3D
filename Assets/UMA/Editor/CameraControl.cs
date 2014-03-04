@@ -108,7 +108,10 @@ namespace UMA
         static void ChangePerspective()
         {
             SceneView.lastActiveSceneView.in2DMode = false;
-            SceneView.lastActiveSceneView.orthographic = !SceneView.lastActiveSceneView.orthographic;
+            SceneView.lastActiveSceneView.LookAt(SceneView.lastActiveSceneView.pivot, 
+                                                 SceneView.lastActiveSceneView.rotation, 
+                                                 SceneView.lastActiveSceneView.size, 
+                                                 !SceneView.lastActiveSceneView.orthographic);
         }
 
         [MenuItem(Data.PACKAGE_NAME + "/View/Change Perspective", validate = true)]

@@ -28,7 +28,7 @@ namespace UMA
     static void Update()
     {
         // Are we enabled?
-        if (!Data.AutoSaveEnabled)
+        if (!Data.AutoSaveEnabled || EditorApplication.currentScene == "")
         {
             return;
         }

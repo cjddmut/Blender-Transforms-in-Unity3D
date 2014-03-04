@@ -16,8 +16,6 @@ namespace UMA
         private static bool _SwallowMouse = false;
         private static int _MouseButton;
 
-        private static int _SceneViewControlID;
-
         // Use this for initialization
         static TransformManager()
         {
