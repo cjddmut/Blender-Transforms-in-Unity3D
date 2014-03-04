@@ -1,6 +1,6 @@
-# Unity Made Awesome 0.1
+# Unity Made Awesome
 
-This is a quick description on how to use UMA 0.1.
+This is a quick description on how to use UMA!
 
 ## Quick Action Hotkeys
 
