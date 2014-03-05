@@ -62,12 +62,14 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/Create Empty Child %&n", priority = Data.OTHERS_PRIORITY)]
         static void CreateEmptyChild()
         {
-            // TODO: Where does it make sense to place the child? Default is 0, 0, 0 in world space.
             GameObject empty = new GameObject();
             empty.name = "GameObject";
 
             Transform active = Selection.activeTransform;
             empty.transform.parent = active;
+
+            // This will make the child's location (0, 0, 0) in local space.
+            empty.transform.position = active.position;
 
             Selection.activeGameObject = empty;
 
