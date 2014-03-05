@@ -38,9 +38,9 @@ namespace UMA
             // Not allowed to save yet.
             return;
         }
-        else
+        else if (!_CanSave)
         {
-            // Open it up!
+            // Open it up! And set next auto save to 5 minutes.
             _CanSave = true;
             _TimeTilSave = EditorApplication.timeSinceStartup + Data.AutoSaveFrequency * 60;
         }
