@@ -39,7 +39,7 @@ namespace UMA
             for (int i = 0; i < _Selected.Length; i++)
             {
                 _OriginalAvgPos += _Selected[i].position;
-                _LastKnownGoodPos = _Selected[i].position;
+                _LastKnownGoodLocalPos[i] = _Selected[i].position;
             }
 
             _OriginalAvgPos /= _Selected.Length;
@@ -128,125 +128,142 @@ namespace UMA
 
             Vector2 objInSP = sceneCam.WorldToScreenPoint(_OriginalAvgPos);
             Vector2 newObjPosInSP = objInSP + toNewMouse;
+            Vector3 camViewPlaneNormal = Util.GetCamViewPlaneNormal(sceneCam);
 
             // There is some slight movement even if the mouse hasn't moved (floating point?). So don't go further.
-            if (toNewMouse.sqrMagnitude == 0)
+            if (toNewMouse.sqrMagnitude != 0)
             {
-                return;
-            }
+                Vector3 moveTo = Vector3.zero;
+                Plane movePlane = new Plane();
+                Ray rayToNewPos = sceneCam.ScreenPointToRay(newObjPosInSP);
 
-            Vector3 moveTo = Vector3.zero;
-            Plane movePlane = new Plane();
-            Vector3 camViewPlaneNormal = Util.GetCamViewPlaneNormal(sceneCam.camera);
-            Ray rayToNewPos = sceneCam.ScreenPointToRay(newObjPosInSP);
-
-            if (_State.MySpace == Space.World)
-            {
-                if (_State.MyMode == TransformState.Mode.Free)
+                if (_State.MySpace == Space.World)
                 {
-                    movePlane = new Plane(camViewPlaneNormal, _OriginalAvgPos);
-                    moveTo = CastRayAndGetPosition(movePlane, rayToNewPos);
-                }
-                else if (_State.MyMode == TransformState.Mode.SingleAxis)
-                {
-                    Vector3 planeNormal = camViewPlaneNormal;
-                    moveTo = _OriginalAvgPos;
-
-                    if (_State.MyAxis == TransformState.Axis.X)
+                    if (_State.MyMode == TransformState.Mode.Free)
                     {
-                        planeNormal.x = 0;
+                        movePlane = new Plane(camViewPlaneNormal, _OriginalAvgPos);
+                        moveTo = CastRayAndGetPosition(movePlane, rayToNewPos);
                     }
-                    else if (_State.MyAxis == TransformState.Axis.Y)
+                    else if (_State.MyMode == TransformState.Mode.SingleAxis)
                     {
-                        planeNormal.y = 0;
+                        Vector3 planeNormal = camViewPlaneNormal;
+                        moveTo = _OriginalAvgPos;
+
+                        if (_State.MyAxis == TransformState.Axis.X)
+                        {
+                            planeNormal.x = 0;
+                        }
+                        else if (_State.MyAxis == TransformState.Axis.Y)
+                        {
+                            planeNormal.y = 0;
+                        }
+                        else
+                        {
+                            planeNormal.z = 0;
+                        }
+
+                        moveTo = GetGlobalProjectedAxisMotion(planeNormal.normalized, rayToNewPos);
                     }
                     else
                     {
-                        planeNormal.z = 0;
+                        if (_State.MyAxis == TransformState.Axis.X)
+                        {
+                            movePlane = new Plane(Vector3.Cross(Vector3.up, Vector3.forward), _OriginalAvgPos);
+                        }
+                        else if (_State.MyAxis == TransformState.Axis.Y)
+                        {
+                            movePlane = new Plane(Vector3.Cross(Vector3.right, Vector3.forward), _OriginalAvgPos);
+                        }
+                        else
+                        {
+                            movePlane = new Plane(Vector3.Cross(Vector3.right, Vector3.up), _OriginalAvgPos);
+                        }
+
+                        moveTo = CastRayAndGetPosition(movePlane, rayToNewPos);
                     }
 
-                    moveTo = GetGlobalProjectedAxisMotion(planeNormal, rayToNewPos);
+                    UpdatePositions(moveTo);
                 }
                 else
                 {
-                    if (_State.MyAxis == TransformState.Axis.X)
+                    for (int i = 0; i < _Selected.Length; i++)
                     {
-                        movePlane = new Plane(Vector3.Cross(Vector3.up, Vector3.forward), _OriginalAvgPos);
-                    }
-                    else if (_State.MyAxis == TransformState.Axis.Y)
-                    {
-                        movePlane = new Plane(Vector3.Cross(Vector3.right, Vector3.forward), _OriginalAvgPos);
-                    }
-                    else
-                    {
-                        movePlane = new Plane(Vector3.Cross(Vector3.right, Vector3.up), _OriginalAvgPos);
-                    }
+                        // Local space!
+                        if (_State.MyMode == TransformState.Mode.SingleAxis)
+                        {
+                            // Working in local space for simplicity.
+                            Vector3 camViewPlaneNormalLocal = _Selected[i].InverseTransformDirection(camViewPlaneNormal);
 
-                    moveTo = CastRayAndGetPosition(movePlane, rayToNewPos);
+                            Ray rayToNewPosLocal = new Ray();
+                            rayToNewPosLocal.origin = _Selected[i].InverseTransformPoint(rayToNewPos.origin);
+                            rayToNewPosLocal.direction = _Selected[i].InverseTransformDirection(rayToNewPos.direction);
+
+                            if (_State.MyAxis == TransformState.Axis.X)
+                            {
+                                camViewPlaneNormalLocal.x = 0;
+                            }
+                            else if (_State.MyAxis == TransformState.Axis.Y)
+                            {
+                                camViewPlaneNormalLocal.y = 0;
+                            }
+                            else
+                            {
+                                camViewPlaneNormalLocal.z = 0;
+                            }
+
+                            moveTo = GetLocalProjectedAxisMotion(camViewPlaneNormalLocal, rayToNewPosLocal, i);
+
+                            // Convert back to global space.
+                            moveTo = _Selected[i].TransformPoint(moveTo);
+                        }
+                        else
+                        {
+                            Vector3 vec1 = Vector3.zero;
+                            Vector3 vec2 = Vector3.zero; ;
+
+                            if (_State.MyAxis == TransformState.Axis.X)
+                            {
+                                vec1 = _Selected[i].TransformDirection(Vector3.up);
+                                vec2 = _Selected[i].TransformDirection(Vector3.forward);
+                            }
+                            else if (_State.MyAxis == TransformState.Axis.Y)
+                            {
+                                vec1 = _Selected[i].TransformDirection(Vector3.right);
+                                vec2 = _Selected[i].TransformDirection(Vector3.forward);
+                            }
+                            else
+                            {
+                                vec1 = _Selected[i].TransformDirection(Vector3.right);
+                                vec2 = _Selected[i].TransformDirection(Vector3.up);
+                            }
+
+                            movePlane = new Plane(Vector3.Cross(vec1, vec2), _Selected[i].position);
+                            moveTo = CastRayAndGetPositionLocal(movePlane, rayToNewPos, i);
+                        }
+
+                        UpdateSinglePosition(moveTo, i);
+                    }
                 }
+            }
 
-                UpdatePositions(moveTo);
+            Handles.color = Data.TranslateOriginColor;
+
+            if (_State.MySpace == Space.World)
+            {
+                Handles.DrawSolidDisc(_LastKnownGoodPos,
+                                      camViewPlaneNormal,
+                                      Data.TranslateOriginSize * (sceneCam.transform.position - _LastKnownGoodPos).magnitude);
             }
             else
             {
-                for (int i = 0; i < _Selected.Length; i++)
+                foreach(Vector3 v in _LastKnownGoodLocalPos)
                 {
-                    // Local space!
-                    if (_State.MyMode == TransformState.Mode.SingleAxis)
-                    {
-                        // Working in local space for simplicity.
-                        Vector3 camViewPlaneNormalLocal = _Selected[i].InverseTransformDirection(camViewPlaneNormal);
-
-                        Ray rayToNewPosLocal = new Ray();
-                        rayToNewPosLocal.origin = _Selected[i].InverseTransformPoint(rayToNewPos.origin);
-                        rayToNewPosLocal.direction = _Selected[i].InverseTransformDirection(rayToNewPos.direction);
-
-                        if (_State.MyAxis == TransformState.Axis.X)
-                        {
-                            camViewPlaneNormalLocal.x = 0;
-                        }
-                        else if (_State.MyAxis == TransformState.Axis.Y)
-                        {
-                            camViewPlaneNormalLocal.y = 0;
-                        }
-                        else
-                        {
-                            camViewPlaneNormalLocal.z = 0;
-                        }
-
-                        moveTo = GetLocalProjectedAxisMotion(camViewPlaneNormalLocal, rayToNewPosLocal, i);
-
-                        // Convert back to global space.
-                        moveTo = _Selected[i].TransformPoint(moveTo);
-                    }
-                    else
-                    {
-                        Vector3 vec1 = Vector3.zero;
-                        Vector3 vec2 = Vector3.zero; ;
-
-                        if (_State.MyAxis == TransformState.Axis.X)
-                        {
-                            vec1 = _Selected[i].TransformDirection(Vector3.up);
-                            vec2 = _Selected[i].TransformDirection(Vector3.forward);
-                        }
-                        else if (_State.MyAxis == TransformState.Axis.Y)
-                        {
-                            vec1 = _Selected[i].TransformDirection(Vector3.right);
-                            vec2 = _Selected[i].TransformDirection(Vector3.forward);
-                        }
-                        else
-                        {
-                            vec1 = _Selected[i].TransformDirection(Vector3.right);
-                            vec2 = _Selected[i].TransformDirection(Vector3.up);
-                        }
-
-                        movePlane = new Plane(Vector3.Cross(vec1, vec2), _Selected[i].position);
-                        moveTo = CastRayAndGetPositionLocal(movePlane, rayToNewPos, i);
-                    }
-
-                    UpdateSinglePosition(moveTo, i);
+                    Handles.DrawSolidDisc(v,
+                                          camViewPlaneNormal,
+                                          Data.TranslateOriginSize * (sceneCam.transform.position - v).magnitude);
                 }
             }
+
         }
 
         private Vector3 CheckThreshold(Vector3 v)

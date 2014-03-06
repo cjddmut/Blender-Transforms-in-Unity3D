@@ -59,7 +59,8 @@ namespace UMA
         public static float ScaleSnapIncrement = 1;
         public static bool UseRInsteadOfT = false;
         public static bool EnableMouseConfirmCancel = false;
-
+        public static float TranslateOriginSize = 0.005f;
+        public static Color TranslateOriginColor = new Color(0.96f, 0.77f, 0, 1);
         //
         // Camera Control
         //

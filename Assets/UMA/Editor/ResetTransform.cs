@@ -68,8 +68,11 @@ namespace UMA
             Transform active = Selection.activeTransform;
             empty.transform.parent = active;
 
-            // This will make the child's location (0, 0, 0) in local space.
-            empty.transform.position = active.position;
+            if (active != null)
+            {
+                // This will make the child's location (0, 0, 0) in local space.
+                empty.transform.position = active.position;
+            }
 
             Selection.activeGameObject = empty;
 
