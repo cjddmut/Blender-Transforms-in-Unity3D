@@ -12,7 +12,6 @@ namespace UMA
         //
 
         public const string PACKAGE_NAME = "UMA";
-        public const string AUTOSAVE_FOLDER = "umasaves";
 
         public const int WINDOW_CONFIG_PRIORITY = 1;
         public const int VIEW_PRIORITY = 101;
@@ -35,6 +34,7 @@ namespace UMA
 
         public static bool AutoSaveEnabled = true;
         public static float AutoSaveFrequency = 5f; // Minutes
+        public static int SavesToKeep = 5;
 
         //
         // Hiding
@@ -79,6 +79,7 @@ namespace UMA
             //       using reflection later. This is currently a little unwieldy.
             EditorPrefs.SetBool(PACKAGE_NAME + " - AS", AutoSaveEnabled);
             EditorPrefs.SetFloat(PACKAGE_NAME + " - AS Freq", AutoSaveFrequency);
+            EditorPrefs.SetInt(PACKAGE_NAME + " - AS Saves", SavesToKeep);
             EditorPrefs.SetBool(PACKAGE_NAME + " - Hide", HidingEnabled);
             EditorPrefs.SetBool(PACKAGE_NAME + " - ResetT", ResetTransformsEnabled);
             EditorPrefs.SetBool(PACKAGE_NAME + " - TE", TransformEditingEnabled);
@@ -95,7 +96,7 @@ namespace UMA
 
         public static void LoadData()
         {
-            // If the first key is missing then just assume we hav eno data to load and go with defaults.
+            // If the first key is missing then just assume we have no data to load and go with defaults.
             if (!EditorPrefs.HasKey(PACKAGE_NAME + " - AS"))
             {
                 return;
@@ -103,6 +104,7 @@ namespace UMA
 
             AutoSaveEnabled = EditorPrefs.GetBool(PACKAGE_NAME + " - AS");
             AutoSaveFrequency = EditorPrefs.GetFloat(PACKAGE_NAME + " - AS Freq");
+            SavesToKeep = EditorPrefs.GetInt(PACKAGE_NAME + " - AS Saves");
             HidingEnabled = EditorPrefs.GetBool(PACKAGE_NAME + " - Hide");
             ResetTransformsEnabled = EditorPrefs.GetBool(PACKAGE_NAME + " - ResetT");
             TransformEditingEnabled = EditorPrefs.GetBool(PACKAGE_NAME + " - TE");

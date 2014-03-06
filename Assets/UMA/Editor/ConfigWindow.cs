@@ -37,6 +37,7 @@ namespace UMA
 
             Data.AutoSaveEnabled = EditorGUILayout.BeginToggleGroup("Auto Save Enabled", Data.AutoSaveEnabled);
             Data.AutoSaveFrequency = EditorGUILayout.FloatField("Frequency (minutes)", Data.AutoSaveFrequency);
+            Data.SavesToKeep = EditorGUILayout.IntField("Number of Saves", Data.SavesToKeep);
             EditorGUILayout.EndToggleGroup();
 
             EditorGUILayout.Space();
