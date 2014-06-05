@@ -40,7 +40,8 @@ namespace UMA
         // Hiding
         //
 
-        public static bool HidingEnabled = true;
+        // I'm  no longer supporting the hiding functionality as I didn't really find it useful. Turning it off by default now.
+        public static bool HidingEnabled = false;
 
         //
         // Reset Transforms
