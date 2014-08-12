@@ -58,27 +58,6 @@ namespace UnityMadeAwesome.BlenderInUnity
             return Data.resetTransformsEnabled;
         }
 
-        // TODO: Right now this is just sort of lumped in with the Reset Transform functions.
-        [MenuItem("Edit/UMA/Create Empty Child %&n", priority = Data.OTHERS_PRIORITY)]
-        static void CreateEmptyChild()
-        {
-            GameObject empty = new GameObject();
-            empty.name = "GameObject";
-
-            Transform active = Selection.activeTransform;
-            empty.transform.parent = active;
-
-            if (active != null)
-            {
-                // This will make the child's location (0, 0, 0) in local space.
-                empty.transform.position = active.position;
-            }
-
-            Selection.activeGameObject = empty;
-
-            Undo.RegisterCreatedObjectUndo(empty, "Create Empty Child");
-        }
-
         [MenuItem("Edit/UMA/Create Empty Child %&n", validate = true)]
         static bool CreateEmptyChildCheck()  
         {
