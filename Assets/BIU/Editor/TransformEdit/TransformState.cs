@@ -2,23 +2,23 @@
 using UnityEditor;
 using System.Collections;
 
-namespace UMA
+namespace BIU
 {
     public class TransformState
     {
-        public Mode MyMode;
-        public Axis MyAxis;
-        public Space MySpace;
-        public bool IsSnapping;
-        public bool OnlyLocal;
+        public Mode myMode;
+        public Axis myAxis;
+        public Space mySpace;
+        public bool isSnapping;
+        public bool onlyLocal;
 
-        private bool _SeenCtrlUp;
+        private bool seenCtrlUp;
 
         private const float LINE_LENGTH = 500;
 
-        private static Color _XAxis = new Color(1, 0, 0, 0.5f);
-        private static Color _YAxis = new Color(0, 1, 0, 0.5f);
-        private static Color _ZAxis = new Color(0, 0, 1, 0.5f);
+        private static Color xAxis = new Color(1, 0, 0, 0.5f);
+        private static Color yAxis = new Color(0, 1, 0, 0.5f);
+        private static Color zAxis = new Color(0, 0, 1, 0.5f);
 
         public enum Mode
         {
@@ -39,9 +39,9 @@ namespace UMA
         public void Init()
         {
             ResetAxisLock();
-            _SeenCtrlUp = true;
-            IsSnapping = Data.SnappingEnabledByDefault;
-            OnlyLocal = false;
+            seenCtrlUp = true;
+            isSnapping = Data.snappingEnabledByDefault;
+            onlyLocal = false;
         }
 
         public void HandleEvent()
@@ -80,24 +80,24 @@ namespace UMA
             {
                 if (shiftPressed)
                 {
-                    if (MyMode == Mode.Free)
+                    if (myMode == Mode.Free)
                     {
-                        MyMode = Mode.DoubleAxis;
-                        MyAxis = impactedAxis;
+                        myMode = Mode.DoubleAxis;
+                        myAxis = impactedAxis;
                     }
-                    else if (MyMode == Mode.SingleAxis)
+                    else if (myMode == Mode.SingleAxis)
                     {
-                        MyMode = Mode.DoubleAxis;
-                        MyAxis = impactedAxis;
-                        MySpace = Space.World;
+                        myMode = Mode.DoubleAxis;
+                        myAxis = impactedAxis;
+                        mySpace = Space.World;
                     }
                     else
                     {
-                        if (MyAxis == impactedAxis)
+                        if (myAxis == impactedAxis)
                         {
-                            if (MySpace == Space.World && !OnlyLocal)
+                            if (mySpace == Space.World && !onlyLocal)
                             {
-                                MySpace = Space.Self;
+                                mySpace = Space.Self;
                             }
                             else
                             {
@@ -106,26 +106,26 @@ namespace UMA
                         }
                         else
                         {
-                            MyAxis = impactedAxis;
-                            MySpace = Space.World;
+                            myAxis = impactedAxis;
+                            mySpace = Space.World;
                         }
                     }
                 }
                 else
                 {
                     // Three possibilities here.
-                    if (MyMode == Mode.Free)
+                    if (myMode == Mode.Free)
                     {
-                        MyMode = Mode.SingleAxis;
-                        MyAxis = impactedAxis;
+                        myMode = Mode.SingleAxis;
+                        myAxis = impactedAxis;
                     }
-                    else if (MyMode == Mode.SingleAxis)
+                    else if (myMode == Mode.SingleAxis)
                     {
-                        if (MyAxis == impactedAxis)
+                        if (myAxis == impactedAxis)
                         {
-                            if (MySpace == Space.World && !OnlyLocal)
+                            if (mySpace == Space.World && !onlyLocal)
                             {
-                                MySpace = Space.Self;
+                                mySpace = Space.Self;
                             }
                             else
                             {
@@ -134,15 +134,15 @@ namespace UMA
                         }
                         else
                         {
-                            MyAxis = impactedAxis;
-                            MySpace = Space.World;
+                            myAxis = impactedAxis;
+                            mySpace = Space.World;
                         }
                     }
                     else
                     {
-                        MyMode = Mode.SingleAxis;
-                        MyAxis = impactedAxis;
-                        MySpace = Space.World;
+                        myMode = Mode.SingleAxis;
+                        myAxis = impactedAxis;
+                        mySpace = Space.World;
                     }
                 }
 
@@ -152,16 +152,16 @@ namespace UMA
             // Snapping? We don't care if it has been marked as Use though we will mark it.
             if (Event.current.control)
             {
-                if (_SeenCtrlUp)
+                if (seenCtrlUp)
                 {
-                    IsSnapping = !IsSnapping;
+                    isSnapping = !isSnapping;
                     Event.current.Use();
-                    _SeenCtrlUp = false;
+                    seenCtrlUp = false;
                 }
             }
             else
             {
-                _SeenCtrlUp = true;
+                seenCtrlUp = true;
             }
         }
 
@@ -170,20 +170,20 @@ namespace UMA
         //
         public void DrawLines(Vector3 originalAvgPos, Transform[] selected)
         {
-            if (MyMode == Mode.Free)
+            if (myMode == Mode.Free)
             {
                 // Nothing to draw in free.
                 return;
             }
 
-            bool drawX = (MyMode == Mode.SingleAxis && MyAxis == Axis.X) || (MyMode == Mode.DoubleAxis && MyAxis != Axis.X) ? true : false;
-            bool drawY = (MyMode == Mode.SingleAxis && MyAxis == Axis.Y) || (MyMode == Mode.DoubleAxis && MyAxis != Axis.Y) ? true : false;
-            bool drawZ = (MyMode == Mode.SingleAxis && MyAxis == Axis.Z) || (MyMode == Mode.DoubleAxis && MyAxis != Axis.Z) ? true : false;
+            bool drawX = (myMode == Mode.SingleAxis && myAxis == Axis.X) || (myMode == Mode.DoubleAxis && myAxis != Axis.X) ? true : false;
+            bool drawY = (myMode == Mode.SingleAxis && myAxis == Axis.Y) || (myMode == Mode.DoubleAxis && myAxis != Axis.Y) ? true : false;
+            bool drawZ = (myMode == Mode.SingleAxis && myAxis == Axis.Z) || (myMode == Mode.DoubleAxis && myAxis != Axis.Z) ? true : false;
 
             Vector3 p1;
             Vector3 p2;
 
-            if (MySpace == Space.Self || OnlyLocal)
+            if (mySpace == Space.Self || onlyLocal)
             {
                 foreach (Transform t in selected)
                 {
@@ -192,7 +192,7 @@ namespace UMA
 
                         p1 = t.position + t.TransformDirection(Vector3.right) * LINE_LENGTH;
                         p2 = t.position + t.TransformDirection(Vector3.left) * LINE_LENGTH;
-                        Handles.color = _XAxis;
+                        Handles.color = xAxis;
                         Handles.DrawLine(p1, p2);
                     }
 
@@ -200,7 +200,7 @@ namespace UMA
                     {
                         p1 = t.position + t.TransformDirection(Vector3.up) * LINE_LENGTH;
                         p2 = t.position + t.TransformDirection(Vector3.down) * LINE_LENGTH;
-                        Handles.color = _YAxis;
+                        Handles.color = yAxis;
                         Handles.DrawLine(p1, p2);
                     }
 
@@ -208,7 +208,7 @@ namespace UMA
                     {
                         p1 = t.position + t.TransformDirection(Vector3.forward) * LINE_LENGTH;
                         p2 = t.position + t.TransformDirection(Vector3.back) * LINE_LENGTH;
-                        Handles.color = _ZAxis;
+                        Handles.color = zAxis;
                         Handles.DrawLine(p1, p2);
                     }
                 }
@@ -221,7 +221,7 @@ namespace UMA
                     p2 = originalAvgPos;
                     p1.x += LINE_LENGTH;
                     p2.x -= LINE_LENGTH;
-                    Handles.color = _XAxis;
+                    Handles.color = xAxis;
                     Handles.DrawLine(p1, p2);
                 }
 
@@ -231,7 +231,7 @@ namespace UMA
                     p2 = originalAvgPos;
                     p1.y += LINE_LENGTH;
                     p2.y -= LINE_LENGTH;
-                    Handles.color = _YAxis;
+                    Handles.color = yAxis;
                     Handles.DrawLine(p1, p2);
                 }
 
@@ -241,16 +241,16 @@ namespace UMA
                     p2 = originalAvgPos;
                     p1.z += LINE_LENGTH;
                     p2.z -= LINE_LENGTH;
-                    Handles.color = _ZAxis;
+                    Handles.color = zAxis;
                     Handles.DrawLine(p1, p2);
                 }
             }
         }
         private void ResetAxisLock()
         {
-            MyMode = Mode.Free;
-            MySpace = Space.World;
-            MyAxis = Axis.None;
+            myMode = Mode.Free;
+            mySpace = Space.World;
+            myAxis = Axis.None;
         }
     }
 }

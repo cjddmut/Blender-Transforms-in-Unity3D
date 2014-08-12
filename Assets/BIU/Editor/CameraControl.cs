@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.Collections;
 
-namespace UMA
+namespace BIU
 {
     [InitializeOnLoad]
     public class CameraControl
@@ -14,22 +14,22 @@ namespace UMA
         // TODO: I keep having to write mouse/keyboard event handlers, I should write one that handles
         // all of them and sends messages to see if anyone wants to handle one or something.
 
-        private static bool[] _NumPadUp;
+        private static bool[] numPadUp;
 
         static CameraControl()
         {
             SceneView.onSceneGUIDelegate += SceneGUI;
-            _NumPadUp = new bool[10];
+            numPadUp = new bool[10];
 
-            for (int i = 0; i < _NumPadUp.Length; i++)
+            for (int i = 0; i < numPadUp.Length; i++)
             {
-                _NumPadUp[i] = true;
+                numPadUp[i] = true;
             }
         }
 
         static void SceneGUI(SceneView sceneView)
         {
-            if (!Data.CameraControlEnabled)
+            if (!Data.cameraControlEnabled)
             {
                 return;
             }
@@ -44,7 +44,7 @@ namespace UMA
                     Event.current.keyCode == KeyCode.Keypad7)
                 {
                     // We still gotta check by individuals
-                    if (Event.current.keyCode == KeyCode.Keypad1 && _NumPadUp[Event.current.keyCode - KeyCode.Keypad0])
+                    if (Event.current.keyCode == KeyCode.Keypad1 && numPadUp[Event.current.keyCode - KeyCode.Keypad0])
                     {
                         if (Event.current.control)
                         {
@@ -56,7 +56,7 @@ namespace UMA
                         }
                     }
 
-                    if (Event.current.keyCode == KeyCode.Keypad3 && _NumPadUp[Event.current.keyCode - KeyCode.Keypad0])
+                    if (Event.current.keyCode == KeyCode.Keypad3 && numPadUp[Event.current.keyCode - KeyCode.Keypad0])
                     {
                         if (Event.current.control)
                         {
@@ -68,12 +68,12 @@ namespace UMA
                         }
                     }
 
-                    if (Event.current.keyCode == KeyCode.Keypad5 && _NumPadUp[Event.current.keyCode - KeyCode.Keypad0])
+                    if (Event.current.keyCode == KeyCode.Keypad5 && numPadUp[Event.current.keyCode - KeyCode.Keypad0])
                     {
                         ChangePerspective();
                     }
 
-                    if (Event.current.keyCode == KeyCode.Keypad7 && _NumPadUp[Event.current.keyCode - KeyCode.Keypad0])
+                    if (Event.current.keyCode == KeyCode.Keypad7 && numPadUp[Event.current.keyCode - KeyCode.Keypad0])
                     {
                         if (Event.current.control)
                         {
@@ -85,7 +85,7 @@ namespace UMA
                         }
                     }
 
-                    _NumPadUp[Event.current.keyCode - KeyCode.Keypad0] = false;
+                    numPadUp[Event.current.keyCode - KeyCode.Keypad0] = false;
                     Event.current.Use();
                 }
             }
@@ -97,7 +97,7 @@ namespace UMA
                     Event.current.keyCode == KeyCode.Keypad5 ||
                     Event.current.keyCode == KeyCode.Keypad7)
                 {
-                    _NumPadUp[Event.current.keyCode - KeyCode.Keypad0] = true;
+                    numPadUp[Event.current.keyCode - KeyCode.Keypad0] = true;
                     Event.current.Use();
                 }
             }
@@ -117,7 +117,7 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/View/Change Perspective", validate = true)]
         static bool ChangePerspectiveCheck()
         {
-            return Data.CameraControlEnabled;
+            return Data.cameraControlEnabled;
         }
 
         [MenuItem(Data.PACKAGE_NAME + "/View/Front", priority = Data.VIEW_PRIORITY)]
@@ -129,7 +129,7 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/View/Front", validate = true)]
         static bool LookFromFrontCheck()
         {
-            return Data.CameraControlEnabled;
+            return Data.cameraControlEnabled;
         }
 
         [MenuItem(Data.PACKAGE_NAME + "/View/Back", priority = Data.VIEW_PRIORITY)]
@@ -141,7 +141,7 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/View/Back", validate = true)]
         static bool LookFromBackCheck()
         {
-            return Data.CameraControlEnabled;
+            return Data.cameraControlEnabled;
         }
 
         [MenuItem(Data.PACKAGE_NAME + "/View/Right", priority = Data.VIEW_PRIORITY)]
@@ -153,7 +153,7 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/View/Right", validate = true)]
         static bool LookFromRightCheck()
         {
-            return Data.CameraControlEnabled;
+            return Data.cameraControlEnabled;
         }
 
         [MenuItem(Data.PACKAGE_NAME + "/View/Left", priority = Data.VIEW_PRIORITY)]
@@ -165,7 +165,7 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/View/Left", validate = true)]
         static bool LookFromLeftCheck()
         {
-            return Data.CameraControlEnabled;
+            return Data.cameraControlEnabled;
         }
 
         [MenuItem(Data.PACKAGE_NAME + "/View/Top", priority = Data.VIEW_PRIORITY)]
@@ -177,7 +177,7 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/View/Top", validate = true)]
         static bool LookFromTopCheck()
         {
-            return Data.CameraControlEnabled;
+            return Data.cameraControlEnabled;
         }
 
         [MenuItem(Data.PACKAGE_NAME + "/View/Bottom", priority = Data.VIEW_PRIORITY)]
@@ -189,7 +189,7 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/View/Bottom", validate = true)]
         static bool LookFromLeftBottom()
         {
-            return Data.CameraControlEnabled;
+            return Data.cameraControlEnabled;
         }
 
         private static void ApplyRotation(Quaternion rot)

@@ -2,46 +2,46 @@
 using UnityEditor;
 using System.Collections;
 
-namespace UMA
+namespace BIU
 {
     public class Rotate : ModalEdit
     {
-        private Vector2 _OriginalMousePos;
-        private Vector3 _AvgPos;
-        private Vector3[] _OriginalRotations;
-        private Vector3[] _OriginalPositions;
-        private Transform[] _Selected;
-        private TransformState _State;
+        private Vector2 originalMousePos;
+        private Vector3 avgPos;
+        private Vector3[] originalRotations;
+        private Vector3[] originalPositions;
+        private Transform[] selected;
+        private TransformState state;
 
         private const float ROTATION_THRESHOLD = 0.02f;
 
         public Rotate()
         {
-            _State = new TransformState();
-            TriggerKey = Data.RotateKey;
+            state = new TransformState();
+            triggerKey = Data.rotateKey;
         }
 
         public override void Start()
         {
             base.Start();
 
-            _OriginalMousePos = Event.current.mousePosition;
+            originalMousePos = Event.current.mousePosition;
 
             // Just in case the order isn't guaranteed, I'm going to save the selecteds.
-            _Selected = Selection.GetTransforms(SelectionMode.TopLevel);
-            _AvgPos = Vector3.zero;
-            _OriginalRotations = new Vector3[_Selected.Length];
-            _OriginalPositions = new Vector3[_Selected.Length];
-            _State.Init();
+            selected = Selection.GetTransforms(SelectionMode.TopLevel);
+            avgPos = Vector3.zero;
+            originalRotations = new Vector3[selected.Length];
+            originalPositions = new Vector3[selected.Length];
+            state.Init();
 
-            for (int i = 0; i < _Selected.Length; i++)
+            for (int i = 0; i < selected.Length; i++)
             {
-                _AvgPos += _Selected[i].position;
-                _OriginalRotations[i] = _Selected[i].eulerAngles;
-                _OriginalPositions[i] = _Selected[i].position;
+                avgPos += selected[i].position;
+                originalRotations[i] = selected[i].eulerAngles;
+                originalPositions[i] = selected[i].position;
             }
 
-            _AvgPos /= _Selected.Length;
+            avgPos /= selected.Length;
 
             Undo.IncrementCurrentGroup();
         }
@@ -50,19 +50,19 @@ namespace UMA
         {
             base.Update();
 
-            if (!IsInMode)
+            if (!isInMode)
             {
                 return;
             }
 
-            _State.HandleEvent();
+            state.HandleEvent();
             
             // We reset everything to push to the UNDO stack.
             ResetRotations();
-            Undo.RecordObjects(_Selected, "Rotate");
+            Undo.RecordObjects(selected, "Rotate");
 
-            _State.DrawLines(_AvgPos, _Selected);
-            CalculateRotation(_OriginalMousePos, Event.current.mousePosition);
+            state.DrawLines(avgPos, selected);
+            CalculateRotation(originalMousePos, Event.current.mousePosition);
         }
 
         public override void Confirm()
@@ -79,18 +79,18 @@ namespace UMA
 
         private void ResetRotations()
         {
-            for (int i = 0; i < _Selected.Length; i++)
+            for (int i = 0; i < selected.Length; i++)
             {
-                _Selected[i].eulerAngles = _OriginalRotations[i];
-                _Selected[i].position = _OriginalPositions[i];
+                selected[i].eulerAngles = originalRotations[i];
+                selected[i].position = originalPositions[i];
             }
         }
 
         private void UpdateRotations(Vector3 axis, float angle)
         {
-            foreach (Transform t in _Selected)
+            foreach (Transform t in selected)
             {
-                t.RotateAround(_AvgPos, axis, angle);
+                t.RotateAround(avgPos, axis, angle);
             }
         }
 
@@ -105,7 +105,7 @@ namespace UMA
                 return;
             }
 
-            Vector2 inSP = sceneCam.WorldToScreenPoint(_AvgPos);
+            Vector2 inSP = sceneCam.WorldToScreenPoint(avgPos);
             inSP.y = sceneCam.pixelHeight - inSP.y;
 
             float angle = Vector2.Angle(mousePos1 - inSP, mousePos2 - inSP);
@@ -116,9 +116,9 @@ namespace UMA
                 angle = 360 - angle;
             }
 
-            if (_State.MySpace == Space.World)
+            if (state.mySpace == Space.World)
             {
-                if (_State.MyMode == TransformState.Mode.Free)
+                if (state.myMode == TransformState.Mode.Free)
                 {
                     // The best way I could figure out how to get a direction to the camera plane was to cast
                     // a ray from the camera and use the -direction. I thought using an InverseTransformDir on
@@ -127,11 +127,11 @@ namespace UMA
                 }
                 else
                 {
-                    Vector3 toCam = sceneCam.transform.position - _AvgPos;
+                    Vector3 toCam = sceneCam.transform.position - avgPos;
 
                     // For rotations, pressing 'z' or 'shift+z' result in the same behavior. I'll support both
                     // just for consistency but I could just nix all shift commands.
-                    if (_State.MyAxis == TransformState.Axis.X)
+                    if (state.myAxis == TransformState.Axis.X)
                     {
                         if (toCam.x >= 0)
                         {
@@ -142,7 +142,7 @@ namespace UMA
                             axis = Vector3.left;
                         }
                     }
-                    else if (_State.MyAxis == TransformState.Axis.Y)
+                    else if (state.myAxis == TransformState.Axis.Y)
                     {
                         if (toCam.y >= 0)
                         {
@@ -171,11 +171,11 @@ namespace UMA
             else
             {
                 // As above, 'x' and 'shift+x' is the same.
-                foreach (Transform t in _Selected)
+                foreach (Transform t in selected)
                 {
                     Vector3 caminObjSP = t.transform.InverseTransformPoint(sceneCam.transform.position);
 
-                    if (_State.MyAxis == TransformState.Axis.X)
+                    if (state.myAxis == TransformState.Axis.X)
                     {
                         if (caminObjSP.x >= 0)
                         {
@@ -186,7 +186,7 @@ namespace UMA
                             axis = t.transform.TransformDirection(Vector3.left);
                         }
                     }
-                    else if (_State.MyAxis == TransformState.Axis.Y)
+                    else if (state.myAxis == TransformState.Axis.Y)
                     {
                         if (caminObjSP.y >= 0)
                         {
@@ -220,56 +220,56 @@ namespace UMA
 
         private void CheckThreshold()
         {
-            for (int i = 0; i < _Selected.Length; i++)
+            for (int i = 0; i < selected.Length; i++)
             {
                 // Clean up work. Who understands Quaternions?! Not me!
 
                 // TODO: Err, this "clean up" doesn't seem to impact the inspector values which was kinda the point.
-                Vector3 eulerAngles = _Selected[i].eulerAngles;
+                Vector3 eulerAngles = selected[i].eulerAngles;
 
                 eulerAngles.x %= 360;
 
-                if (Mathf.Abs(_OriginalRotations[i].x - eulerAngles.x) < ROTATION_THRESHOLD)
+                if (Mathf.Abs(originalRotations[i].x - eulerAngles.x) < ROTATION_THRESHOLD)
                 {
-                    eulerAngles.x = _OriginalRotations[i].x;
+                    eulerAngles.x = originalRotations[i].x;
                 }
 
                 eulerAngles.y %= 360;
 
-                if (Mathf.Abs(_OriginalRotations[i].y - eulerAngles.y) < ROTATION_THRESHOLD)
+                if (Mathf.Abs(originalRotations[i].y - eulerAngles.y) < ROTATION_THRESHOLD)
                 {
-                    eulerAngles.y = _OriginalRotations[i].y;
+                    eulerAngles.y = originalRotations[i].y;
                 }
 
                 eulerAngles.z %= 360;
 
-                if (Mathf.Abs(_OriginalRotations[i].z - eulerAngles.z) < ROTATION_THRESHOLD)
+                if (Mathf.Abs(originalRotations[i].z - eulerAngles.z) < ROTATION_THRESHOLD)
                 {
-                    eulerAngles.z = _OriginalRotations[i].z;
+                    eulerAngles.z = originalRotations[i].z;
                 }
 
-                _Selected[i].eulerAngles = eulerAngles;
+                selected[i].eulerAngles = eulerAngles;
             }
         }
 
         private void HandleSnapping()
         {
-            if (!_State.IsSnapping || Data.RotateSnapIncrement == 0)
+            if (!state.isSnapping || Data.rotateSnapIncrement == 0)
             {
                 return;
             }
 
-            foreach (Transform t in _Selected)
+            foreach (Transform t in selected)
             {
                 Vector3 vecToSnap = t.eulerAngles;
 
-                vecToSnap /= Data.RotateSnapIncrement;
+                vecToSnap /= Data.rotateSnapIncrement;
 
                 vecToSnap.x = Mathf.Round(vecToSnap.x);
                 vecToSnap.y = Mathf.Round(vecToSnap.y);
                 vecToSnap.z = Mathf.Round(vecToSnap.z);
 
-                vecToSnap *= Data.RotateSnapIncrement;
+                vecToSnap *= Data.rotateSnapIncrement;
 
                 t.eulerAngles = vecToSnap;
             }

@@ -2,53 +2,53 @@
 using UnityEditor;
 using System.Collections;
 
-namespace UMA
+namespace BIU
 {
     public class Translate : ModalEdit
     {
-        private Vector2 _OriginalMousePos;
-        private Vector3[] _ToObjects;
-        private Vector3 _OriginalAvgPos;
-        private Vector3 _LastKnownGoodPos;
-        private Vector3[] _LastKnownGoodLocalPos;
-        private Transform[] _Selected;
-        private TransformState _State;
+        private Vector2 originalMousePos;
+        private Vector3[] toObjects;
+        private Vector3 originalAvgPos;
+        private Vector3 lastKnownGoodPos;
+        private Vector3[] lastKnownGoodLocalPos;
+        private Transform[] selected;
+        private TransformState state;
 
         private const float MOVEMENT_THRESHOLD = 0.01f;
 
         public Translate()
         {
-            _State = new TransformState();
-            TriggerKey = Data.TranslateKey;
+            state = new TransformState();
+            triggerKey = Data.translateKey;
         }
 
         public override void Start()
         {
             base.Start();
 
-            _OriginalMousePos = Event.current.mousePosition;
-            _OriginalMousePos.y = SceneView.lastActiveSceneView.camera.pixelHeight - _OriginalMousePos.y;
+            originalMousePos = Event.current.mousePosition;
+            originalMousePos.y = SceneView.lastActiveSceneView.camera.pixelHeight - originalMousePos.y;
 
             // Just in case the order isn't guaranteed, I'm going to save the selecteds.
-            _Selected = Selection.GetTransforms(SelectionMode.TopLevel);
-            _ToObjects = new Vector3[_Selected.Length];
-            _LastKnownGoodLocalPos = new Vector3[_Selected.Length];
-            _OriginalAvgPos = Vector3.zero;
-            _State.Init();
+            selected = Selection.GetTransforms(SelectionMode.TopLevel);
+            toObjects = new Vector3[selected.Length];
+            lastKnownGoodLocalPos = new Vector3[selected.Length];
+            originalAvgPos = Vector3.zero;
+            state.Init();
 
-            for (int i = 0; i < _Selected.Length; i++)
+            for (int i = 0; i < selected.Length; i++)
             {
-                _OriginalAvgPos += _Selected[i].position;
-                _LastKnownGoodLocalPos[i] = _Selected[i].position;
+                originalAvgPos += selected[i].position;
+                lastKnownGoodLocalPos[i] = selected[i].position;
             }
 
-            _OriginalAvgPos /= _Selected.Length;
-            _LastKnownGoodPos = _OriginalAvgPos;
+            originalAvgPos /= selected.Length;
+            lastKnownGoodPos = originalAvgPos;
 
             // Now that we have the average position, we get a bunch of vectors to each objects.
-            for (int i = 0; i < _Selected.Length; i++)
+            for (int i = 0; i < selected.Length; i++)
             {
-                _ToObjects[i] = _Selected[i].position - _OriginalAvgPos;
+                toObjects[i] = selected[i].position - originalAvgPos;
             }
 
             Undo.IncrementCurrentGroup();
@@ -58,18 +58,18 @@ namespace UMA
         {
             base.Update();
 
-            if (!IsInMode)
+            if (!isInMode)
             {
                 return;
             }
 
-            _State.HandleEvent();
+            state.HandleEvent();
 
             // We reset everything to push to the UNDO stack.
-            UpdatePositions(_OriginalAvgPos);
-            Undo.RecordObjects(_Selected, "Translate");
+            UpdatePositions(originalAvgPos);
+            Undo.RecordObjects(selected, "Translate");
 
-            _State.DrawLines(_OriginalAvgPos, _Selected);
+            state.DrawLines(originalAvgPos, selected);
 
             CalculatePosition();
         }
@@ -83,23 +83,23 @@ namespace UMA
         public override void Cancel()
         {
             base.Cancel();
-            UpdatePositions(_OriginalAvgPos);
+            UpdatePositions(originalAvgPos);
         }
 
         private void UpdatePositions(Vector3 from)
         {
             from = CheckThreshold(from);
 
-            if (_State.IsSnapping)
+            if (state.isSnapping)
             {
                 from = HandleSnapping(from);
             }
 
-            _LastKnownGoodPos = from;
+            lastKnownGoodPos = from;
 
-            for (int i = 0; i < _Selected.Length; i++)
+            for (int i = 0; i < selected.Length; i++)
             {
-                _Selected[i].position = from + _ToObjects[i];
+                selected[i].position = from + toObjects[i];
             }
         }
 
@@ -107,13 +107,13 @@ namespace UMA
         {
             moveTo = CheckThreshold(moveTo);
 
-            if (_State.IsSnapping)
+            if (state.isSnapping)
             {
                 moveTo = HandleSnapping(moveTo);
             }
 
-            _LastKnownGoodLocalPos[index] = moveTo;
-            _Selected[index].position = moveTo;
+            lastKnownGoodLocalPos[index] = moveTo;
+            selected[index].position = moveTo;
         }
 
         private void CalculatePosition()
@@ -124,9 +124,9 @@ namespace UMA
             Vector2 mousePos = Event.current.mousePosition;
             mousePos.y = sceneCam.pixelHeight - mousePos.y;
 
-            Vector2 toNewMouse = mousePos - _OriginalMousePos;
+            Vector2 toNewMouse = mousePos - originalMousePos;
 
-            Vector2 objInSP = sceneCam.WorldToScreenPoint(_OriginalAvgPos);
+            Vector2 objInSP = sceneCam.WorldToScreenPoint(originalAvgPos);
             Vector2 newObjPosInSP = objInSP + toNewMouse;
             Vector3 camViewPlaneNormal = Util.GetCamViewPlaneNormal(sceneCam);
 
@@ -137,23 +137,23 @@ namespace UMA
                 Plane movePlane = new Plane();
                 Ray rayToNewPos = sceneCam.ScreenPointToRay(newObjPosInSP);
 
-                if (_State.MySpace == Space.World)
+                if (state.mySpace == Space.World)
                 {
-                    if (_State.MyMode == TransformState.Mode.Free)
+                    if (state.myMode == TransformState.Mode.Free)
                     {
-                        movePlane = new Plane(camViewPlaneNormal, _OriginalAvgPos);
+                        movePlane = new Plane(camViewPlaneNormal, originalAvgPos);
                         moveTo = CastRayAndGetPosition(movePlane, rayToNewPos);
                     }
-                    else if (_State.MyMode == TransformState.Mode.SingleAxis)
+                    else if (state.myMode == TransformState.Mode.SingleAxis)
                     {
                         Vector3 planeNormal = camViewPlaneNormal;
-                        moveTo = _OriginalAvgPos;
+                        moveTo = originalAvgPos;
 
-                        if (_State.MyAxis == TransformState.Axis.X)
+                        if (state.myAxis == TransformState.Axis.X)
                         {
                             planeNormal.x = 0;
                         }
-                        else if (_State.MyAxis == TransformState.Axis.Y)
+                        else if (state.myAxis == TransformState.Axis.Y)
                         {
                             planeNormal.y = 0;
                         }
@@ -166,17 +166,17 @@ namespace UMA
                     }
                     else
                     {
-                        if (_State.MyAxis == TransformState.Axis.X)
+                        if (state.myAxis == TransformState.Axis.X)
                         {
-                            movePlane = new Plane(Vector3.Cross(Vector3.up, Vector3.forward), _OriginalAvgPos);
+                            movePlane = new Plane(Vector3.Cross(Vector3.up, Vector3.forward), originalAvgPos);
                         }
-                        else if (_State.MyAxis == TransformState.Axis.Y)
+                        else if (state.myAxis == TransformState.Axis.Y)
                         {
-                            movePlane = new Plane(Vector3.Cross(Vector3.right, Vector3.forward), _OriginalAvgPos);
+                            movePlane = new Plane(Vector3.Cross(Vector3.right, Vector3.forward), originalAvgPos);
                         }
                         else
                         {
-                            movePlane = new Plane(Vector3.Cross(Vector3.right, Vector3.up), _OriginalAvgPos);
+                            movePlane = new Plane(Vector3.Cross(Vector3.right, Vector3.up), originalAvgPos);
                         }
 
                         moveTo = CastRayAndGetPosition(movePlane, rayToNewPos);
@@ -186,23 +186,23 @@ namespace UMA
                 }
                 else
                 {
-                    for (int i = 0; i < _Selected.Length; i++)
+                    for (int i = 0; i < selected.Length; i++)
                     {
                         // Local space!
-                        if (_State.MyMode == TransformState.Mode.SingleAxis)
+                        if (state.myMode == TransformState.Mode.SingleAxis)
                         {
                             // Working in local space for simplicity.
-                            Vector3 camViewPlaneNormalLocal = _Selected[i].InverseTransformDirection(camViewPlaneNormal);
+                            Vector3 camViewPlaneNormalLocal = selected[i].InverseTransformDirection(camViewPlaneNormal);
 
                             Ray rayToNewPosLocal = new Ray();
-                            rayToNewPosLocal.origin = _Selected[i].InverseTransformPoint(rayToNewPos.origin);
-                            rayToNewPosLocal.direction = _Selected[i].InverseTransformDirection(rayToNewPos.direction);
+                            rayToNewPosLocal.origin = selected[i].InverseTransformPoint(rayToNewPos.origin);
+                            rayToNewPosLocal.direction = selected[i].InverseTransformDirection(rayToNewPos.direction);
 
-                            if (_State.MyAxis == TransformState.Axis.X)
+                            if (state.myAxis == TransformState.Axis.X)
                             {
                                 camViewPlaneNormalLocal.x = 0;
                             }
-                            else if (_State.MyAxis == TransformState.Axis.Y)
+                            else if (state.myAxis == TransformState.Axis.Y)
                             {
                                 camViewPlaneNormalLocal.y = 0;
                             }
@@ -214,30 +214,30 @@ namespace UMA
                             moveTo = GetLocalProjectedAxisMotion(camViewPlaneNormalLocal, rayToNewPosLocal, i);
 
                             // Convert back to global space.
-                            moveTo = _Selected[i].TransformPoint(moveTo);
+                            moveTo = selected[i].TransformPoint(moveTo);
                         }
                         else
                         {
                             Vector3 vec1 = Vector3.zero;
                             Vector3 vec2 = Vector3.zero; ;
 
-                            if (_State.MyAxis == TransformState.Axis.X)
+                            if (state.myAxis == TransformState.Axis.X)
                             {
-                                vec1 = _Selected[i].TransformDirection(Vector3.up);
-                                vec2 = _Selected[i].TransformDirection(Vector3.forward);
+                                vec1 = selected[i].TransformDirection(Vector3.up);
+                                vec2 = selected[i].TransformDirection(Vector3.forward);
                             }
-                            else if (_State.MyAxis == TransformState.Axis.Y)
+                            else if (state.myAxis == TransformState.Axis.Y)
                             {
-                                vec1 = _Selected[i].TransformDirection(Vector3.right);
-                                vec2 = _Selected[i].TransformDirection(Vector3.forward);
+                                vec1 = selected[i].TransformDirection(Vector3.right);
+                                vec2 = selected[i].TransformDirection(Vector3.forward);
                             }
                             else
                             {
-                                vec1 = _Selected[i].TransformDirection(Vector3.right);
-                                vec2 = _Selected[i].TransformDirection(Vector3.up);
+                                vec1 = selected[i].TransformDirection(Vector3.right);
+                                vec2 = selected[i].TransformDirection(Vector3.up);
                             }
 
-                            movePlane = new Plane(Vector3.Cross(vec1, vec2), _Selected[i].position);
+                            movePlane = new Plane(Vector3.Cross(vec1, vec2), selected[i].position);
                             moveTo = CastRayAndGetPositionLocal(movePlane, rayToNewPos, i);
                         }
 
@@ -246,21 +246,21 @@ namespace UMA
                 }
             }
 
-            Handles.color = Data.TranslateOriginColor;
+            Handles.color = Data.translateOriginColor;
 
-            if (_State.MySpace == Space.World)
+            if (state.mySpace == Space.World)
             {
-                Handles.DrawSolidDisc(_LastKnownGoodPos,
+                Handles.DrawSolidDisc(lastKnownGoodPos,
                                       camViewPlaneNormal,
-                                      Data.TranslateOriginSize * (sceneCam.transform.position - _LastKnownGoodPos).magnitude);
+                                      Data.translateOriginSize * (sceneCam.transform.position - lastKnownGoodPos).magnitude);
             }
             else
             {
-                foreach(Vector3 v in _LastKnownGoodLocalPos)
+                foreach(Vector3 v in lastKnownGoodLocalPos)
                 {
                     Handles.DrawSolidDisc(v,
                                           camViewPlaneNormal,
-                                          Data.TranslateOriginSize * (sceneCam.transform.position - v).magnitude);
+                                          Data.translateOriginSize * (sceneCam.transform.position - v).magnitude);
                 }
             }
 
@@ -269,19 +269,19 @@ namespace UMA
         private Vector3 CheckThreshold(Vector3 v)
         {
             // Floating point thresholds!
-            if (Mathf.Abs(v.x - _OriginalAvgPos.x) < MOVEMENT_THRESHOLD)
+            if (Mathf.Abs(v.x - originalAvgPos.x) < MOVEMENT_THRESHOLD)
             {
-                v.x = _OriginalAvgPos.x;
+                v.x = originalAvgPos.x;
             }
 
-            if (Mathf.Abs(v.y - _OriginalAvgPos.y) < MOVEMENT_THRESHOLD)
+            if (Mathf.Abs(v.y - originalAvgPos.y) < MOVEMENT_THRESHOLD)
             {
-                v.y = _OriginalAvgPos.y;
+                v.y = originalAvgPos.y;
             }
 
-            if (Mathf.Abs(v.z - _OriginalAvgPos.z) < MOVEMENT_THRESHOLD)
+            if (Mathf.Abs(v.z - originalAvgPos.z) < MOVEMENT_THRESHOLD)
             {
-                v.z = _OriginalAvgPos.z;
+                v.z = originalAvgPos.z;
             }
 
             return v;
@@ -297,7 +297,7 @@ namespace UMA
             }
             else
             {
-                return _LastKnownGoodPos;
+                return lastKnownGoodPos;
             }
         }
 
@@ -311,26 +311,26 @@ namespace UMA
             }
             else
             {
-                return _LastKnownGoodLocalPos[index];
+                return lastKnownGoodLocalPos[index];
             }
         }
 
         private Vector3 GetGlobalProjectedAxisMotion(Vector3 planeNormal, Ray mouseRay)
         {
-            Plane movePlane = new Plane(planeNormal, _OriginalAvgPos);
+            Plane movePlane = new Plane(planeNormal, originalAvgPos);
             float distance;
             Vector3 contactPoint;
-            Vector3 moveTo = _OriginalAvgPos;
+            Vector3 moveTo = originalAvgPos;
 
             if (movePlane.Raycast(mouseRay, out distance))
             {
                 contactPoint = mouseRay.origin + (mouseRay.direction * distance);
 
-                if (_State.MyAxis == TransformState.Axis.X)
+                if (state.myAxis == TransformState.Axis.X)
                 {
                     moveTo.x = contactPoint.x;
                 }
-                else if (_State.MyAxis == TransformState.Axis.Y)
+                else if (state.myAxis == TransformState.Axis.Y)
                 {
                     moveTo.y = contactPoint.y;
                 }
@@ -341,7 +341,7 @@ namespace UMA
             }
             else
             {
-                moveTo = _LastKnownGoodPos;
+                moveTo = lastKnownGoodPos;
             }
 
             return moveTo;
@@ -358,11 +358,11 @@ namespace UMA
             {
                 contactPoint = mouseRay.origin + (mouseRay.direction * distance);
 
-                if (_State.MyAxis == TransformState.Axis.X)
+                if (state.myAxis == TransformState.Axis.X)
                 {
                     moveTo.x = contactPoint.x;
                 }
-                else if (_State.MyAxis == TransformState.Axis.Y)
+                else if (state.myAxis == TransformState.Axis.Y)
                 {
                     moveTo.y = contactPoint.y;
                 }
@@ -374,7 +374,7 @@ namespace UMA
             else
             {
                 // This is slightly unnecessary as I will just convert it back to world space.
-                moveTo = _Selected[index].InverseTransformPoint(_LastKnownGoodLocalPos[index]);
+                moveTo = selected[index].InverseTransformPoint(lastKnownGoodLocalPos[index]);
             }
 
             return moveTo;
@@ -382,19 +382,19 @@ namespace UMA
 
         private Vector3 HandleSnapping(Vector3 vecToSnap)
         {
-            if (Data.TranslateSnapIncrement == 0)
+            if (Data.translateSnapIncrement == 0)
             {
                 // I guess no snapping...
                 return vecToSnap;
             }
 
-            vecToSnap /= Data.TranslateSnapIncrement;
+            vecToSnap /= Data.translateSnapIncrement;
 
             vecToSnap.x = Mathf.Round(vecToSnap.x);
             vecToSnap.y = Mathf.Round(vecToSnap.y);
             vecToSnap.z = Mathf.Round(vecToSnap.z);
 
-            vecToSnap *= Data.TranslateSnapIncrement;
+            vecToSnap *= Data.translateSnapIncrement;
 
             return vecToSnap;
         }

@@ -2,20 +2,20 @@
 using UnityEditor;
 using System.Collections;
 
-namespace UMA
+namespace BIU
 {
     public class Scale : ModalEdit
     {
-        private float _OrignalDistance;
-        private Vector3 _AvgPos;
-        private Vector3[] _OriginalScales;
-        private Transform[] _Selected;
-        private TransformState _State;
+        private float orignalDistance;
+        private Vector3 avgPos;
+        private Vector3[] originalScales;
+        private Transform[] selected;
+        private TransformState state;
 
         public Scale()
         {
-            _State = new TransformState();
-            TriggerKey = Data.ScaleKey;
+            state = new TransformState();
+            triggerKey = Data.scaleKey;
         }
 
         public override void Start()
@@ -23,27 +23,27 @@ namespace UMA
             base.Start();
 
             // Just in case the order isn't guaranteed, I'm going to save the selecteds.
-            _Selected = Selection.GetTransforms(SelectionMode.TopLevel);
-            _AvgPos = Vector3.zero;
-            _OriginalScales = new Vector3[_Selected.Length];
-            _State.Init();
-            _State.OnlyLocal = true;
+            selected = Selection.GetTransforms(SelectionMode.TopLevel);
+            avgPos = Vector3.zero;
+            originalScales = new Vector3[selected.Length];
+            state.Init();
+            state.onlyLocal = true;
 
-            for (int i = 0; i < _Selected.Length; i++)
+            for (int i = 0; i < selected.Length; i++)
             {
-                _AvgPos += _Selected[i].position;
-                _OriginalScales[i] = _Selected[i].localScale;
+                avgPos += selected[i].position;
+                originalScales[i] = selected[i].localScale;
             }
 
-            _AvgPos /= _Selected.Length;
+            avgPos /= selected.Length;
 
-            Vector2 avgInSP = SceneView.lastActiveSceneView.camera.WorldToScreenPoint(_AvgPos);
+            Vector2 avgInSP = SceneView.lastActiveSceneView.camera.WorldToScreenPoint(avgPos);
             avgInSP.y = SceneView.lastActiveSceneView.camera.pixelHeight - avgInSP.y;
-            _OrignalDistance = Vector2.Distance(Event.current.mousePosition, avgInSP);
+            orignalDistance = Vector2.Distance(Event.current.mousePosition, avgInSP);
 
-            if (_OrignalDistance == 0)
+            if (orignalDistance == 0)
             {
-                _OrignalDistance = 0.1f;
+                orignalDistance = 0.1f;
             }
 
             Undo.IncrementCurrentGroup();
@@ -53,18 +53,18 @@ namespace UMA
         {
             base.Update();
 
-            if (!IsInMode)
+            if (!isInMode)
             {
                 return;
             }
 
-            _State.HandleEvent();
+            state.HandleEvent();
             
             // We reset everything to push to the UNDO stack.
             ResetScale();
-            Undo.RecordObjects(_Selected, "Scale");
+            Undo.RecordObjects(selected, "Scale");
 
-            _State.DrawLines(_AvgPos, _Selected);
+            state.DrawLines(avgPos, selected);
             CalculateScale();
         }
 
@@ -82,15 +82,15 @@ namespace UMA
 
         private void ResetScale()
         {
-            for (int i = 0; i < _Selected.Length; i++)
+            for (int i = 0; i < selected.Length; i++)
             {
-                _Selected[i].localScale = _OriginalScales[i];
+                selected[i].localScale = originalScales[i];
             }
         }
 
         private void UpdateScale(Vector3 scaleBy)
         {
-            foreach (Transform t in _Selected)
+            foreach (Transform t in selected)
             {
                 Vector3 ls = t.localScale;
 
@@ -107,30 +107,30 @@ namespace UMA
             Camera sceneCam = SceneView.lastActiveSceneView.camera;
             Vector2 mousePos = Event.current.mousePosition;
             Vector3 scaleBy = Vector3.one;
-            Vector2 avgInSP = sceneCam.WorldToScreenPoint(_AvgPos);
+            Vector2 avgInSP = sceneCam.WorldToScreenPoint(avgPos);
             avgInSP.y = sceneCam.pixelHeight - avgInSP.y;
 
             float newDistance = Vector2.Distance(mousePos, avgInSP);
 
             // There is some slight movement even if the mouse hasn't moved (floating point?). So don't go further.
-            if (newDistance - _OrignalDistance == 0)
+            if (newDistance - orignalDistance == 0)
             {
                 return;
             }
 
-            float scaleFactor = newDistance / _OrignalDistance;
+            float scaleFactor = newDistance / orignalDistance;
 
-            if (_State.MyMode == TransformState.Mode.Free)
+            if (state.myMode == TransformState.Mode.Free)
             {
                 scaleBy *= scaleFactor;
             }
-            else if (_State.MyMode == TransformState.Mode.SingleAxis)
+            else if (state.myMode == TransformState.Mode.SingleAxis)
             {
-                if (_State.MyAxis == TransformState.Axis.X)
+                if (state.myAxis == TransformState.Axis.X)
                 {
                     scaleBy.x *= scaleFactor;
                 }
-                else if (_State.MyAxis == TransformState.Axis.Y)
+                else if (state.myAxis == TransformState.Axis.Y)
                 {
                     scaleBy.y *= scaleFactor;
 
@@ -144,11 +144,11 @@ namespace UMA
             {
                 scaleBy *= scaleFactor;
 
-                if (_State.MyAxis == TransformState.Axis.X)
+                if (state.myAxis == TransformState.Axis.X)
                 {
                     scaleBy.x = 1;
                 }
-                else if (_State.MyAxis == TransformState.Axis.Y)
+                else if (state.myAxis == TransformState.Axis.Y)
                 {
                     scaleBy.y = 1;
                 }
@@ -158,7 +158,7 @@ namespace UMA
                 }
             }
 
-            if (_State.IsSnapping)
+            if (state.isSnapping)
             {
                 scaleBy = HandleSnapping(scaleBy);
             }
@@ -168,18 +168,18 @@ namespace UMA
 
         private Vector3 HandleSnapping(Vector3 vecToSnap)
         {
-            if (Data.ScaleSnapIncrement == 0)
+            if (Data.scaleSnapIncrement == 0)
             {
                 return vecToSnap;
             }
 
-            vecToSnap /= Data.ScaleSnapIncrement;
+            vecToSnap /= Data.scaleSnapIncrement;
 
             vecToSnap.x = Mathf.Round(vecToSnap.x);
             vecToSnap.y = Mathf.Round(vecToSnap.y);
             vecToSnap.z = Mathf.Round(vecToSnap.z);
 
-            vecToSnap *= Data.ScaleSnapIncrement;
+            vecToSnap *= Data.scaleSnapIncrement;
 
             return vecToSnap;
         }

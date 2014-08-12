@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.Collections;
 
-namespace UMA
+namespace BIU
 {
     public class ResetTransform
     {
@@ -20,7 +20,7 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/Reset/Position &g", validate = true)]
         static bool ResetPositionCheck()
         {
-            return Data.ResetTransformsEnabled;
+            return Data.resetTransformsEnabled;
         }
 
         [MenuItem(Data.PACKAGE_NAME + "/Reset/Rotation &r", priority = Data.RESET_TRANSFORM_PRIORITY)]
@@ -38,7 +38,7 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/Reset/Rotation &r", validate = true)]
         static bool ResetRotationCheck()
         {
-            return Data.ResetTransformsEnabled;
+            return Data.resetTransformsEnabled;
         }
 
         [MenuItem(Data.PACKAGE_NAME + "/Reset/Scale &s", priority = Data.RESET_TRANSFORM_PRIORITY)]
@@ -55,7 +55,7 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/Reset/Scale &s", validate = true)]
         static bool ResetScaleCheck()
         {
-            return Data.ResetTransformsEnabled;
+            return Data.resetTransformsEnabled;
         }
 
         // TODO: Right now this is just sort of lumped in with the Reset Transform functions.
@@ -82,7 +82,7 @@ namespace UMA
         [MenuItem(Data.PACKAGE_NAME + "/Create Empty Child %&n", validate = true)]
         static bool CreateEmptyChildCheck()  
         {
-            return Data.ResetTransformsEnabled;
+            return Data.resetTransformsEnabled;
         }
     }
 }

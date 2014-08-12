@@ -2,19 +2,19 @@
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace UMA
+namespace BIU
 {
     [InitializeOnLoad]
     public class TransformManager
     {
-        private static Translate _TranslateEdit;
-        private static Rotate _RotateEdit;
-        private static Scale _ScaleEdit;
-        private static ModalEdit _ActiveModal;
-        private static ModalEdit _DelayStart;
+        private static Translate translateEdit;
+        private static Rotate rotateEdit;
+        private static Scale scaleEdit;
+        private static ModalEdit activeModal;
+        private static ModalEdit delayStart;
 
-        private static bool _SwallowMouse = false;
-        private static int _MouseButton;
+        private static bool swallowMouse = false;
+        private static int mouseButton;
 
         // Use this for initialization
         static TransformManager()
@@ -23,41 +23,41 @@ namespace UMA
             EditorApplication.hierarchyWindowItemOnGUI += HierarchyOnGUI;
 
             // Create our model edit singletons.
-            _TranslateEdit = new Translate();
-            _RotateEdit = new Rotate();
-            _ScaleEdit = new Scale();
+            translateEdit = new Translate();
+            rotateEdit = new Rotate();
+            scaleEdit = new Scale();
         }
 
         static void HierarchyOnGUI(int i, Rect r)
         {
-            if (!Data.TransformEditingEnabled)
+            if (!Data.transformEditingEnabled)
             {
                 return;
             }
 
             if (Event.current.type == EventType.KeyDown)
             {
-                if (Event.current.keyCode == Data.TranslateKey)
+                if (Event.current.keyCode == Data.translateKey)
                 {
                     SceneView.lastActiveSceneView.Focus();
                     Event.current.Use();
 
                     // Hey translate! We'll start it on next SceneGUI!
-                    _DelayStart = _TranslateEdit;
+                    delayStart = translateEdit;
                 }
                 
-                if (Event.current.keyCode == Data.RotateKey)
+                if (Event.current.keyCode == Data.rotateKey)
                 {
                     SceneView.lastActiveSceneView.Focus();
                     Event.current.Use();
-                    _DelayStart = _RotateEdit;
+                    delayStart = rotateEdit;
                 }
 
-                if (Event.current.keyCode == Data.ScaleKey)
+                if (Event.current.keyCode == Data.scaleKey)
                 {
                     SceneView.lastActiveSceneView.Focus();
                     Event.current.Use();
-                    _DelayStart = _ScaleEdit;
+                    delayStart = scaleEdit;
                 }
 
             }
@@ -65,14 +65,14 @@ namespace UMA
 
         static void SceneGUI(SceneView sceneView)
         {
-            if (!Data.TransformEditingEnabled)
+            if (!Data.transformEditingEnabled)
             {
                 return;
             }
 
-            if (_ActiveModal != null)
+            if (activeModal != null)
             {
-                _ActiveModal.Update();
+                activeModal.Update();
 
                 if (EditorWindow.focusedWindow != sceneView)
                 {
@@ -84,67 +84,67 @@ namespace UMA
                 HandleUtility.Repaint();
             }
 
-            if (_DelayStart != null)
+            if (delayStart != null)
             {
                 // We got a message to start!
-                if (_ActiveModal != null)
+                if (activeModal != null)
                 {
-                    _ActiveModal.Cancel();
+                    activeModal.Cancel();
                 }
 
-                _ActiveModal = _DelayStart;
-                _DelayStart = null;
-                _ActiveModal.Start();
+                activeModal = delayStart;
+                delayStart = null;
+                activeModal.Start();
             }
 
 
             if (Event.current.isKey && Event.current.type == EventType.KeyDown)
             {
-                if (Event.current.keyCode == Data.TranslateKey)
+                if (Event.current.keyCode == Data.translateKey)
                 {
                     Event.current.Use();
 
-                    if (_ActiveModal != null)
+                    if (activeModal != null)
                     {
-                        _ActiveModal.Cancel();
+                        activeModal.Cancel();
                     }
 
-                    _ActiveModal = _TranslateEdit;
-                    _ActiveModal.Start();
+                    activeModal = translateEdit;
+                    activeModal.Start();
                 }
-                else if (Event.current.keyCode == Data.RotateKey)
+                else if (Event.current.keyCode == Data.rotateKey)
                 {
                     Event.current.Use();
 
-                    if (_ActiveModal != null)
+                    if (activeModal != null)
                     {
-                        _ActiveModal.Cancel();
+                        activeModal.Cancel();
                     }
 
-                    _ActiveModal = _RotateEdit;
-                    _ActiveModal.Start();
+                    activeModal = rotateEdit;
+                    activeModal.Start();
                 }
-                if (Event.current.keyCode == Data.ScaleKey)
+                if (Event.current.keyCode == Data.scaleKey)
                 {
                     Event.current.Use();
 
-                    if (_ActiveModal != null)
+                    if (activeModal != null)
                     {
-                        _ActiveModal.Cancel();
+                        activeModal.Cancel();
                     }
 
-                    _ActiveModal = _ScaleEdit;
-                    _ActiveModal.Start();
+                    activeModal = scaleEdit;
+                    activeModal.Start();
                 }
             }
 
-            if (_SwallowMouse)
+            if (swallowMouse)
             {
-                if (Event.current.button == _MouseButton)
+                if (Event.current.button == mouseButton)
                 {
                     if (Event.current.type == EventType.MouseUp)
                     {
-                        _SwallowMouse = false;
+                        swallowMouse = false;
                     }
                     
                     Event.current.Use();
@@ -154,13 +154,13 @@ namespace UMA
 
         public static void ModalFinished()
         {
-            _ActiveModal = null;
+            activeModal = null;
         }
 
         public static void SwallowMouseUntilUp(int button)
         {
-            _SwallowMouse = true;
-            _MouseButton = button;
+            swallowMouse = true;
+            mouseButton = button;
         }
     }
 }
