@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.Collections;
 
-namespace BIU
+namespace UnityMadeAwesome.BlenderInUnity
 {
     [InitializeOnLoad]
     public class Data
@@ -11,7 +11,7 @@ namespace BIU
         // Unconfigurable Data
         //
 
-        public const string PACKAGE_NAME = "BIU";
+        public const string PACKAGE_NAME = "UMA.BIU";
 
         public const int WINDOW_CONFIG_PRIORITY = 1;
         public const int VIEW_PRIORITY = 101;
@@ -78,7 +78,7 @@ namespace BIU
         public static void LoadData()
         {
             // If the first key is missing then just assume we have no data to load and go with defaults.
-            if (!EditorPrefs.HasKey(PACKAGE_NAME + " - AS"))
+            if (!EditorPrefs.HasKey(PACKAGE_NAME + " - ResetT"))
             {
                 return;
             }

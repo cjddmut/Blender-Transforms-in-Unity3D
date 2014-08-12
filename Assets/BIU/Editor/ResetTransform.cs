@@ -2,11 +2,11 @@
 using UnityEditor;
 using System.Collections;
 
-namespace BIU
+namespace UnityMadeAwesome.BlenderInUnity
 {
     public class ResetTransform
     {
-        [MenuItem(Data.PACKAGE_NAME + "/Reset/Position &g", priority = Data.RESET_TRANSFORM_PRIORITY)]
+        [MenuItem("Edit/UMA/Reset Position &g", priority = Data.RESET_TRANSFORM_PRIORITY)]
         static void ResetPosition()
         {
             Undo.RecordObjects(Selection.transforms, "Reset Position");
@@ -17,13 +17,13 @@ namespace BIU
             }
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/Reset/Position &g", validate = true)]
+        [MenuItem("Edit/UMA/Reset Position &g", validate = true)]
         static bool ResetPositionCheck()
         {
             return Data.resetTransformsEnabled;
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/Reset/Rotation &r", priority = Data.RESET_TRANSFORM_PRIORITY)]
+        [MenuItem("Edit/UMA/Reset Rotation &r", priority = Data.RESET_TRANSFORM_PRIORITY)]
         static void ResetRotation()
         {
             Undo.RecordObjects(Selection.transforms, "Reset Rotation");
@@ -35,13 +35,13 @@ namespace BIU
 
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/Reset/Rotation &r", validate = true)]
+        [MenuItem("Edit/UMA/Reset Rotation &r", validate = true)]
         static bool ResetRotationCheck()
         {
             return Data.resetTransformsEnabled;
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/Reset/Scale &s", priority = Data.RESET_TRANSFORM_PRIORITY)]
+        [MenuItem("Edit/UMA/Reset Scale &s", priority = Data.RESET_TRANSFORM_PRIORITY)]
         static void ResetScale()
         {
             Undo.RecordObjects(Selection.transforms, "Reset Scale");
@@ -52,14 +52,14 @@ namespace BIU
             }
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/Reset/Scale &s", validate = true)]
+        [MenuItem("Edit/UMA/Reset Scale &s", validate = true)]
         static bool ResetScaleCheck()
         {
             return Data.resetTransformsEnabled;
         }
 
         // TODO: Right now this is just sort of lumped in with the Reset Transform functions.
-        [MenuItem(Data.PACKAGE_NAME + "/Create Empty Child %&n", priority = Data.OTHERS_PRIORITY)]
+        [MenuItem("Edit/UMA/Create Empty Child %&n", priority = Data.OTHERS_PRIORITY)]
         static void CreateEmptyChild()
         {
             GameObject empty = new GameObject();
@@ -79,7 +79,7 @@ namespace BIU
             Undo.RegisterCreatedObjectUndo(empty, "Create Empty Child");
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/Create Empty Child %&n", validate = true)]
+        [MenuItem("Edit/UMA/Create Empty Child %&n", validate = true)]
         static bool CreateEmptyChildCheck()  
         {
             return Data.resetTransformsEnabled;

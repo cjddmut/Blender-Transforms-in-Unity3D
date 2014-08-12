@@ -2,12 +2,11 @@
 using UnityEditor;
 using System.Collections;
 
-namespace BIU
+namespace UnityMadeAwesome.BlenderInUnity
 {
     public class ConfigWindow : EditorWindow
     {
-        [MenuItem(Data.PACKAGE_NAME + "/Configuation Window", priority = Data.WINDOW_CONFIG_PRIORITY)]
-        [MenuItem("Window/UMA Configuration")]
+        [MenuItem("Window/Unity Made Awesome/Blender Transforms In Unity")]
         static void OpenWindow()
         {
             ConfigWindow window = (ConfigWindow)EditorWindow.GetWindow(typeof(ConfigWindow));
@@ -18,7 +17,6 @@ namespace BIU
         {
             EditorGUILayout.Space();
 
-            // Autosave
             Data.transformEditingEnabled = EditorGUILayout.BeginToggleGroup("Transform Edit Enabled", Data.transformEditingEnabled);
 
             Data.snappingEnabledByDefault = EditorGUILayout.Toggle("Snap By Default", Data.snappingEnabledByDefault);

@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.Collections;
 
-namespace BIU
+namespace UnityMadeAwesome.BlenderInUnity
 {
     public abstract class ModalEdit
     {

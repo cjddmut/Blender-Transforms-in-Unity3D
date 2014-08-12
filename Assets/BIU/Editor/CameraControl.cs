@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.Collections;
 
-namespace BIU
+namespace UnityMadeAwesome.BlenderInUnity
 {
     [InitializeOnLoad]
     public class CameraControl
@@ -104,7 +104,6 @@ namespace BIU
         }
 
         // For every function I make sure 2D mode is off, this is really a 3D feature.
-        [MenuItem(Data.PACKAGE_NAME + "/View/Change Perspective", priority = Data.VIEW_PRIORITY)]
         static void ChangePerspective()
         {
             SceneView.lastActiveSceneView.in2DMode = false;
@@ -114,82 +113,39 @@ namespace BIU
                                                  !SceneView.lastActiveSceneView.orthographic);
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/View/Change Perspective", validate = true)]
         static bool ChangePerspectiveCheck()
         {
             return Data.cameraControlEnabled;
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/View/Front", priority = Data.VIEW_PRIORITY)]
         static void LookFromFront()
         {
             ApplyRotation(Quaternion.Euler(0, 180, 0));
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/View/Front", validate = true)]
-        static bool LookFromFrontCheck()
-        {
-            return Data.cameraControlEnabled;
-        }
-
-        [MenuItem(Data.PACKAGE_NAME + "/View/Back", priority = Data.VIEW_PRIORITY)]
         static void LookFromBack()
         {
             ApplyRotation(Quaternion.Euler(0, 0, 0));
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/View/Back", validate = true)]
-        static bool LookFromBackCheck()
-        {
-            return Data.cameraControlEnabled;
-        }
-
-        [MenuItem(Data.PACKAGE_NAME + "/View/Right", priority = Data.VIEW_PRIORITY)]
         static void LookFromRight()
         {
             ApplyRotation(Quaternion.Euler(0, 90, 0));
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/View/Right", validate = true)]
-        static bool LookFromRightCheck()
-        {
-            return Data.cameraControlEnabled;
-        }
-
-        [MenuItem(Data.PACKAGE_NAME + "/View/Left", priority = Data.VIEW_PRIORITY)]
         static void LookFromLeft()
         {
             ApplyRotation(Quaternion.Euler(0, -90, 0));
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/View/Left", validate = true)]
-        static bool LookFromLeftCheck()
-        {
-            return Data.cameraControlEnabled;
-        }
-
-        [MenuItem(Data.PACKAGE_NAME + "/View/Top", priority = Data.VIEW_PRIORITY)]
         static void LookFromTop()
         {
             ApplyRotation(Quaternion.Euler(90, 180, 0));
         }
 
-        [MenuItem(Data.PACKAGE_NAME + "/View/Top", validate = true)]
-        static bool LookFromTopCheck()
-        {
-            return Data.cameraControlEnabled;
-        }
-
-        [MenuItem(Data.PACKAGE_NAME + "/View/Bottom", priority = Data.VIEW_PRIORITY)]
         static void LookFromBottom()
         {
             ApplyRotation(Quaternion.Euler(-90, 180, 0));
-        }
-
-        [MenuItem(Data.PACKAGE_NAME + "/View/Bottom", validate = true)]
-        static bool LookFromLeftBottom()
-        {
-            return Data.cameraControlEnabled;
         }
 
         private static void ApplyRotation(Quaternion rot)

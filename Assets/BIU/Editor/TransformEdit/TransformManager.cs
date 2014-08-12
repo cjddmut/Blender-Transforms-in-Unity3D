@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace BIU
+namespace UnityMadeAwesome.BlenderInUnity
 {
     [InitializeOnLoad]
     public class TransformManager
