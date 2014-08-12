@@ -1,6 +1,6 @@
-# Unity Made Awesome
+# Blender Transforms in Unity 3D (BIU)
 
-This is a quick description on how to use UMA!
+This is a quick description on how to use BIU!
 
 ## Quick Action Hotkeys
 
@@ -32,7 +32,7 @@ You can now with the ease of hotkeys manipulate the transform of objects in the 
 
 This will move the object parallel to the camera's view plane based off the motion of the mouse.
 
-**T - Rotate**
+**R - Rotate**
 
 This will rotate an object through an axis that is perpendicular to the camera's view plane. Considering the object's position as the center, the object will rotate based off of the angle of the mouse's original position and the current position of the mouse.
 
@@ -68,16 +68,6 @@ In the UMA Configuration Window (UMA -> Configuration Window or Window -> UMA Co
 
 **Scale Snap Increment** The increment from no scaling (1, 1, 1) to snap the scaling to. Default is 1.
 
-**'R' for Rotate** Use key 'R' instead of 'T' for rotation. Note, this will prevent the transform tool change in the scene view.
+**'T' for Rotate** Use key 'T' instead of 'R' for rotate. This is different than Blender but possibly desirable as using 'R' will override the rotate widget change in the scene view.
 
 **Enable Mouse (iffy)** Enable the mouse to be used to confirm or cancel transforms. If enabled then left click will confirm a transform edit while right click will cancel an edit. However, there are limitations and issues to using this feature. The click must occur in the scene view and after a right mouse click, an additional click with the left click is necessary in order to select and object.
-
-## Hiding Object(s)
-
-In the sceneview, objects may be hidden so that they do not appear while working on the scene. These objects will be unhidden on play, when a scene is saved, or when scripts are compiled.
-
-Object(s) can be hidden pressing 'H' when they are selected. This will turn off their renderers while they are considered hidden. Shift+H will hide all objects in the scene that are not currently selected. In order to manually unhide these objects, simply press Alt+H which will turn back on all renderers on objects hidden.
-
-## Autosave
-
-Now built in is an auto save for the scene currently being worked on. On scripting compilation, when playing, or after 5 minutes a saved copy of the scene will be stored in a umasaves folder that is created at the scene's location. Only one backup is maintained so this feature isn't really around to revert back to previous state but instead to prevent major loss of work if Unity crashes or your computer blows up but the harddrive managed to survive.
