@@ -57,7 +57,7 @@ Any time while performing a transform edit, Ctrl may be pressed to toggle snappi
 
 ### Configurable Options ###
 
-In the UMA Configuration Window (UMA -> Configuration Window or Window -> UMA Configuration) there are options for altering the behavior of the transform editting.
+In the BTU Configuration Window (Window -> Unity Made Awesome -> Blender Transforms in Unity) there are options for altering the behavior of the transform editting.
 
 **Snap By Default** - If this is enabled then objects will snap by default when transform editing. When this is the case pressing Ctrl will toggle the non-snapping behavior.
 
