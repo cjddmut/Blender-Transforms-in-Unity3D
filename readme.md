@@ -1,6 +1,11 @@
-# Blender Transforms in Unity 3D (BIU)
+# Blender Transforms in Unity 3D (BTU)
 
-This is a quick description on how to use BIU!
+Use Blender-esque hotkeys to maniputate the transform of Game Objects in the Unity3D editor scene.
+
+###Obtain!###
+[Releases](https://github.com/cjddmut/Blender-Transforms-in-Unity3D/releases)
+
+If you'd like the most up to date version (which is the most cool), then pull the repo or download it [here](https://github.com/cjddmut/Blender-Transforms-in-Unity3D/archive/develop.zip) and copy the files in Assets to your project's Assets folder.
 
 ## Quick Action Hotkeys
 
@@ -17,12 +22,6 @@ This will set the local rotation of the object to (0, 0, 0).
 **Alt+S - Reset Scale**
 
 This will set the local scale of the object to (1, 1, 1).
-
-### Others ###
-
-Ctrl+Alt+N Create Empty Child
-
-Creates an empty child to the selected object, the local position of this child is (0, 0, 0). If multiple objects are selected then the active object will become the parent. If no objects are selected then a GameObject is created at (0, 0, 0) with no parent.
 
 ## Transform Edit
 
@@ -60,7 +59,7 @@ Any time while performing a transform edit, Ctrl may be pressed to toggle snappi
 
 In the UMA Configuration Window (UMA -> Configuration Window or Window -> UMA Configuration) there are options for altering the behavior of the transform editting.
 
-**Snap By Default ** - If this is enabled then objects will snap by default when transform editing. When this is the case pressing Ctrl will toggle the non-snapping behavior.
+**Snap By Default** - If this is enabled then objects will snap by default when transform editing. When this is the case pressing Ctrl will toggle the non-snapping behavior.
 
 **Translate Snap Increment** The increment from the global zero position to snap objects to. Default is 1.
 
