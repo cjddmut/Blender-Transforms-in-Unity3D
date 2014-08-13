@@ -10,7 +10,7 @@ namespace UnityMadeAwesome.BlenderInUnity
         static void OpenWindow()
         {
             ConfigWindow window = (ConfigWindow)EditorWindow.GetWindow(typeof(ConfigWindow));
-            window.title = Data.PACKAGE_NAME + " Config";
+            window.title = "BTU Config";
         }
 
         void OnGUI()
@@ -33,12 +33,12 @@ namespace UnityMadeAwesome.BlenderInUnity
 
             EditorGUILayout.Space();
 
-            Data.resetTransformsEnabled = EditorGUILayout.BeginToggleGroup("Reset Transform Enabled", Data.resetTransformsEnabled);
+            Data.resetTransformsEnabled = EditorGUILayout.BeginToggleGroup("Reset Transform Hot Keys Enabled", Data.resetTransformsEnabled);
             EditorGUILayout.EndToggleGroup();
 
             EditorGUILayout.Space();
 
-            Data.cameraControlEnabled = EditorGUILayout.BeginToggleGroup("Camera Control Enabled", Data.cameraControlEnabled);
+            Data.cameraControlEnabled = EditorGUILayout.BeginToggleGroup("Camera Control Hot Keys Enabled", Data.cameraControlEnabled);
             EditorGUILayout.EndToggleGroup();
         }
 

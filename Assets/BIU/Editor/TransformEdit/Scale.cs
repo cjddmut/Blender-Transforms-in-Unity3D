@@ -158,30 +158,31 @@ namespace UnityMadeAwesome.BlenderInUnity
                 }
             }
 
-            if (state.isSnapping)
-            {
-                scaleBy = HandleSnapping(scaleBy);
-            }
-
             UpdateScale(scaleBy);
+            HandleSnapping();
         }
 
-        private Vector3 HandleSnapping(Vector3 vecToSnap)
+        private void HandleSnapping()
         {
-            if (Data.scaleSnapIncrement == 0)
+            if (!state.isSnapping || Data.scaleSnapIncrement == 0)
             {
-                return vecToSnap;
+                return;
             }
 
-            vecToSnap /= Data.scaleSnapIncrement;
+            foreach (Transform t in selected)
+            {
+                Vector3 vecToSnap = t.localScale;
 
-            vecToSnap.x = Mathf.Round(vecToSnap.x);
-            vecToSnap.y = Mathf.Round(vecToSnap.y);
-            vecToSnap.z = Mathf.Round(vecToSnap.z);
+                vecToSnap /= Data.scaleSnapIncrement;
 
-            vecToSnap *= Data.scaleSnapIncrement;
+                vecToSnap.x = Mathf.Round(vecToSnap.x);
+                vecToSnap.y = Mathf.Round(vecToSnap.y);
+                vecToSnap.z = Mathf.Round(vecToSnap.z);
 
-            return vecToSnap;
+                vecToSnap *= Data.scaleSnapIncrement;
+
+                t.localScale = vecToSnap;
+            }
         }
     }
 }
