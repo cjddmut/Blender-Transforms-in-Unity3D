@@ -2,7 +2,7 @@
 
 <!---%=description%-->
 
-Did you like the hotkeys used to manipulate the position, rotation, and scale of objects in Blender? I did too so BTU is an editor script that allows the manipulation of GameObjects in Unity3D using the hotkeys from Blender.
+An editor script that allow the manipulation of GameObject’s position, rotation, and scale through the hotkeys that are used by Blender. Also allow quick hotkey resetting of the transform and hotkeys for manipulating the camera in scene view.
 
 <!---%=obtain%-->
 
