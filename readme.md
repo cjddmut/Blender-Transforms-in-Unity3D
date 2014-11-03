@@ -2,7 +2,7 @@
 
 <!---%=description%-->
 
-Use Blender-esque hotkeys to maniputate the transform of Game Objects in the Unity3D editor scene.
+Did you like the hotkeys used to manipulate the position, rotation, and scale of objects in Blender? I did too so BTU is an editor script that allows the manipulation of GameObjects in Unity3D using the hotkeys from Blender.
 
 <!---%=obtain%-->
 
