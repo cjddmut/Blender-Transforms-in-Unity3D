@@ -1,12 +1,13 @@
+<!---%=title%-->
 # Blender Transforms in Unity 3D (BTU)
-
+<!---%=description%-->
 Use Blender-esque hotkeys to maniputate the transform of Game Objects in the Unity3D editor scene.
-
+<!---%=obtain%-->
 ###Obtain!###
 [Releases](https://github.com/cjddmut/Blender-Transforms-in-Unity3D/releases)
 
 If you'd like the most up to date version (which is the most cool), then pull the repo or download it [here](https://github.com/cjddmut/Blender-Transforms-in-Unity3D/archive/develop.zip) and copy the files in Assets to your project's Assets folder.
-
+<!---%=docrest%-->
 ## Quick Action Hotkeys
 
 ### Reset Transform ###
@@ -70,3 +71,6 @@ In the BTU Configuration Window (Window -> Unity Made Awesome -> Blender Transfo
 **'T' for Rotate** Use key 'T' instead of 'R' for rotate. This is different than Blender but possibly desirable as using 'R' will override the rotate widget change in the scene view.
 
 **Enable Mouse (iffy)** Enable the mouse to be used to confirm or cancel transforms. If enabled then left click will confirm a transform edit while right click will cancel an edit. However, there are limitations and issues to using this feature. The click must occur in the scene view and after a right mouse click, an additional click with the left click is necessary in order to select and object.
+<!---%title=Blender Transforms for Unity3D%-->
+<!---%download=https://github.com/cjddmut/Blender-Transforms-in-Unity3D/releases/download/v0.1.0/BlenderTransformsInUnity-v0.1.0.unitypackage%-->
+<!---%github=https://github.com/cjddmut/Blender-Transforms-in-Unity3D%-->
