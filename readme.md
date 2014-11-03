@@ -1,13 +1,18 @@
-<!---%=title%-->
 # Blender Transforms in Unity 3D (BTU)
+
 <!---%=description%-->
+
 Use Blender-esque hotkeys to maniputate the transform of Game Objects in the Unity3D editor scene.
+
 <!---%=obtain%-->
+
 ###Obtain!###
 [Releases](https://github.com/cjddmut/Blender-Transforms-in-Unity3D/releases)
 
 If you'd like the most up to date version (which is the most cool), then pull the repo or download it [here](https://github.com/cjddmut/Blender-Transforms-in-Unity3D/archive/develop.zip) and copy the files in Assets to your project's Assets folder.
+
 <!---%=docrest%-->
+
 ## Quick Action Hotkeys
 
 ### Reset Transform ###
